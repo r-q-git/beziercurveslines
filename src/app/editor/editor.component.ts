@@ -1,6 +1,16 @@
-import { Component, ElementRef, HostListener, OnInit, ViewChild, AfterViewInit } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  HostListener,
+  OnInit,
+  ViewChild,
+  AfterViewInit,
+} from '@angular/core';
 
-interface Point { x: number; y: number; }
+interface Point {
+  x: number;
+  y: number;
+}
 interface Line {
   id: number;
   color: string;
@@ -28,14 +38,25 @@ export class EditorComponent implements OnInit, AfterViewInit {
   dragging: any = null;
 
   // --- Zoom & Footer State ---
-  zoomLevel: number = 1.0; 
+  zoomLevel: number = 1.0;
   showFooter: boolean = false;
   isGlobalLocked: boolean = false;
 
   // --- UI Controls (Restoring missing properties) ---
   menuStates = { width: false };
-  widthOptions = Array.from({ length: 15 }, (_, i) => (i + 1) * 2); // 2px to 30px
-  colors = ['#3b82f6', '#22c55e', '#eab308', '#ef4444', '#000000', '#8b5cf6', '#ec4899', '#f97316', '#06b6d4', '#10b981'];
+  widthOptions = Array.from({ length: 100 }, (_, i) => (i + 1));
+  colors = [
+    '#3b82f6',
+    '#22c55e',
+    '#eab308',
+    '#ef4444',
+    '#000000',
+    '#8b5cf6',
+    '#ec4899',
+    '#f97316',
+    '#06b6d4',
+    '#10b981',
+  ];
   scrollIndex = 0;
 
   get activeLine() {
@@ -72,7 +93,6 @@ export class EditorComponent implements OnInit, AfterViewInit {
     this.lines.forEach((line) => {
       const pts = [line.start, ...line.elbows, line.end];
       const path = new Path2D(this.getPath(pts, line.type));
-
       this.ctx.strokeStyle = line.color;
       this.ctx.lineWidth = line.width;
       this.ctx.lineCap = 'round';
@@ -94,6 +114,7 @@ export class EditorComponent implements OnInit, AfterViewInit {
 
     // Elbows
     line.elbows.forEach((p) => {
+      // Draw the elbow point itself
       this.ctx.fillStyle = '#fff';
       this.ctx.strokeStyle = '#ff4444';
       this.ctx.lineWidth = 1;
@@ -101,10 +122,25 @@ export class EditorComponent implements OnInit, AfterViewInit {
       this.ctx.arc(p.x, p.y, 5, 0, Math.PI * 2);
       this.ctx.fill();
       this.ctx.stroke();
-    });
 
+      // Draw the "X" button offset from the point (Top-Right)
+      const offX = p.x + 15;
+      const offY = p.y - 15;
+      this.ctx.fillStyle = '#ef4444';
+      this.ctx.strokeStyle = line.color === '#ef4444' ? '#fff' : '#ef4444';
+      this.ctx.lineWidth = 0.5;
+      this.ctx.beginPath();
+      this.ctx.arc(p.x + 15, p.y - 15, 8, 0, Math.PI * 2);
+      this.ctx.fill();
+      this.ctx.stroke();
+      this.ctx.fillStyle = '#fff';
+      this.ctx.font = 'bold 10px Arial';
+      this.ctx.textAlign = 'center';
+      this.ctx.textBaseline = 'middle';
+      this.ctx.fillText('✕', offX, offY);
+    });
     // Start/End
-    [line.start, line.end].forEach(p => {
+    [line.start, line.end].forEach((p) => {
       this.ctx.fillStyle = '#fff';
       this.ctx.strokeStyle = '#000';
       this.ctx.beginPath();
@@ -116,15 +152,23 @@ export class EditorComponent implements OnInit, AfterViewInit {
 
   private drawIcon(x: number, y: number, icon: string) {
     this.ctx.save();
+
+    // Force the UI line width to 1px so it doesn't inherit the drawing line's width
+    this.ctx.lineWidth = 1;
+
+    // Background box
     this.ctx.fillStyle = '#fff';
     this.ctx.strokeStyle = '#000';
     this.ctx.fillRect(x - 12, y - 12, 24, 24);
     this.ctx.strokeRect(x - 12, y - 12, 24, 24);
+
+    // Icon text
     this.ctx.fillStyle = '#000';
     this.ctx.font = '16px Arial';
     this.ctx.textAlign = 'center';
     this.ctx.textBaseline = 'middle';
     this.ctx.fillText(icon, x, y);
+
     this.ctx.restore();
   }
 
@@ -138,9 +182,12 @@ export class EditorComponent implements OnInit, AfterViewInit {
       const box = this.getBoundingBox(activeLine);
 
       // Delete elbow (Ctrl + Click)
-      const elbowIdx = activeLine.elbows.findIndex(p => Math.hypot(x - p.x, y - p.y) < 10);
-      if (elbowIdx !== -1 && (e.ctrlKey || e.metaKey)) {
-        activeLine.elbows.splice(elbowIdx, 1);
+      const deleteIdx = activeLine.elbows.findIndex(
+        (p) => Math.hypot(x - (p.x + 12), y - (p.y - 12)) < 8,
+      );
+
+      if (deleteIdx !== -1) {
+        activeLine.elbows.splice(deleteIdx, 1);
         this.render();
         return;
       }
@@ -161,8 +208,16 @@ export class EditorComponent implements OnInit, AfterViewInit {
 
       // Rotate UI
       if (Math.hypot(x - (box.midX + 25), y - (box.minY - 40)) < 15) {
-        const center = { x: (activeLine.start.x + activeLine.end.x) / 2, y: (activeLine.start.y + activeLine.end.y) / 2 };
-        this.dragging = { type: 'rotate', line: activeLine, center, startAngle: Math.atan2(y - center.y, x - center.x) };
+        const center = {
+          x: (activeLine.start.x + activeLine.end.x) / 2,
+          y: (activeLine.start.y + activeLine.end.y) / 2,
+        };
+        this.dragging = {
+          type: 'rotate',
+          line: activeLine,
+          center,
+          startAngle: Math.atan2(y - center.y, x - center.x),
+        };
         return;
       }
     }
@@ -179,12 +234,16 @@ export class EditorComponent implements OnInit, AfterViewInit {
     } else {
       const line = this.getLineAt(x, y);
       this.hoveredLineId = line ? line.id : null;
-      this.canvasRef.nativeElement.style.cursor = line ? 'crosshair' : 'default';
+      this.canvasRef.nativeElement.style.cursor = line
+        ? 'pointer'
+        : 'crosshair';
     }
     this.render();
   }
 
-  onMouseUp() { this.dragging = null; }
+  onMouseUp() {
+    this.dragging = null;
+  }
 
   onDoubleClick(e: MouseEvent) {
     const { x, y } = this.getAdjustedCoords(e);
@@ -216,7 +275,8 @@ export class EditorComponent implements OnInit, AfterViewInit {
     const clientX = e.clientX - rect.left;
     const clientY = e.clientY - rect.top;
     const x = (clientX - canvas.width / 2) / this.zoomLevel + canvas.width / 2;
-    const y = (clientY - canvas.height / 2) / this.zoomLevel + canvas.height / 2;
+    const y =
+      (clientY - canvas.height / 2) / this.zoomLevel + canvas.height / 2;
     return { x, y };
   }
 
@@ -227,11 +287,14 @@ export class EditorComponent implements OnInit, AfterViewInit {
       for (let i = 1; i < pts.length; i++) d += ` L ${pts[i].x} ${pts[i].y}`;
     } else {
       for (let i = 0; i < pts.length - 1; i++) {
-        const p1 = pts[i], p2 = pts[i + 1];
+        const p1 = pts[i],
+          p2 = pts[i + 1];
         const p0 = i > 0 ? pts[i - 1] : p1;
         const p3 = i < pts.length - 2 ? pts[i + 2] : p2;
-        const cp1x = p1.x + (p2.x - p0.x) / 6, cp1y = p1.y + (p2.y - p0.y) / 6;
-        const cp2x = p2.x - (p3.x - p1.x) / 6, cp2y = p2.y - (p3.y - p1.y) / 6;
+        const cp1x = p1.x + (p2.x - p0.x) / 6,
+          cp1y = p1.y + (p2.y - p0.y) / 6;
+        const cp2x = p2.x - (p3.x - p1.x) / 6,
+          cp2y = p2.y - (p3.y - p1.y) / 6;
         d += ` C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${p2.x} ${p2.y}`;
       }
     }
@@ -240,18 +303,39 @@ export class EditorComponent implements OnInit, AfterViewInit {
 
   private handleDragging(x: number, y: number) {
     if (this.dragging.type === 'point') {
-      this.dragging.ref.x = x; this.dragging.ref.y = y;
+      this.dragging.ref.x = x;
+      this.dragging.ref.y = y;
+      this.canvasRef.nativeElement.style.cursor = 'grabbing';
     } else if (this.dragging.type === 'line') {
-      const dx = x - this.dragging.lx, dy = y - this.dragging.ly;
-      [this.dragging.line.start, this.dragging.line.end, ...this.dragging.line.elbows].forEach(p => { p.x += dx; p.y += dy; });
-      this.dragging.lx = x; this.dragging.ly = y;
+      const dx = x - this.dragging.lx,
+        dy = y - this.dragging.ly;
+      [
+        this.dragging.line.start,
+        this.dragging.line.end,
+        ...this.dragging.line.elbows,
+      ].forEach((p) => {
+        p.x += dx;
+        p.y += dy;
+      });
+      this.dragging.lx = x;
+      this.dragging.ly = y;
     } else if (this.dragging.type === 'rotate') {
-      const angle = Math.atan2(y - this.dragging.center.y, x - this.dragging.center.x);
+      const angle = Math.atan2(
+        y - this.dragging.center.y,
+        x - this.dragging.center.x,
+      );
       const diff = angle - this.dragging.startAngle;
-      [this.dragging.line.start, this.dragging.line.end, ...this.dragging.line.elbows].forEach(p => {
-        const dx = p.x - this.dragging.center.x, dy = p.y - this.dragging.center.y;
-        p.x = this.dragging.center.x + dx * Math.cos(diff) - dy * Math.sin(diff);
-        p.y = this.dragging.center.y + dx * Math.sin(diff) + dy * Math.cos(diff);
+      [
+        this.dragging.line.start,
+        this.dragging.line.end,
+        ...this.dragging.line.elbows,
+      ].forEach((p) => {
+        const dx = p.x - this.dragging.center.x,
+          dy = p.y - this.dragging.center.y;
+        p.x =
+          this.dragging.center.x + dx * Math.cos(diff) - dy * Math.sin(diff);
+        p.y =
+          this.dragging.center.y + dx * Math.sin(diff) + dy * Math.cos(diff);
       });
       this.dragging.startAngle = angle;
     }
@@ -260,7 +344,9 @@ export class EditorComponent implements OnInit, AfterViewInit {
   private getLineAt(x: number, y: number): Line | null {
     for (let i = this.lines.length - 1; i >= 0; i--) {
       const l = this.lines[i];
-      const path = new Path2D(this.getPath([l.start, ...l.elbows, l.end], l.type));
+      const path = new Path2D(
+        this.getPath([l.start, ...l.elbows, l.end], l.type),
+      );
       this.ctx.lineWidth = 20;
       if (this.ctx.isPointInStroke(path, x, y)) return l;
     }
@@ -269,26 +355,57 @@ export class EditorComponent implements OnInit, AfterViewInit {
 
   private getBoundingBox(line: Line) {
     const all = [line.start, line.end, ...line.elbows];
-    const minX = Math.min(...all.map(p => p.x)), maxX = Math.max(...all.map(p => p.x));
-    return { minY: Math.min(...all.map(p => p.y)), midX: (minX + maxX) / 2 };
+    const minX = Math.min(...all.map((p) => p.x)),
+      maxX = Math.max(...all.map((p) => p.x));
+    return { minY: Math.min(...all.map((p) => p.y)), midX: (minX + maxX) / 2 };
   }
 
   private pToSegDist(x: number, y: number, a: Point, b: Point): number {
     const l2 = (a.x - b.x) ** 2 + (a.y - b.y) ** 2;
     if (l2 === 0) return Math.hypot(x - a.x, y - a.y);
-    const t = Math.max(0, Math.min(1, ((x - a.x) * (b.x - a.x) + (y - a.y) * (b.y - a.y)) / l2));
+    const t = Math.max(
+      0,
+      Math.min(1, ((x - a.x) * (b.x - a.x) + (y - a.y) * (b.y - a.y)) / l2),
+    );
     return Math.hypot(x - (a.x + t * (b.x - a.x)), y - (a.y + t * (b.y - a.y)));
   }
 
   // --- Template Action Methods ---
   addNewLine(type: 'straight' | 'step' | 'curve') {
     const id = Date.now();
-    this.lines.push({
-      id, color: '#3b82f6', width: 4, locked: false, type,
-      start: { x: window.innerWidth/2 - 100, y: window.innerHeight/2 },
-      end: { x: window.innerWidth/2 + 100, y: window.innerHeight/2 },
-      elbows: []
-    });
+    const centerX = window.innerWidth / 2;
+    const centerY = window.innerHeight / 2;
+
+    // 1. Define the base line object
+    let newLine: Line = {
+      id,
+      color: '#3b82f6',
+      width: 4,
+      locked: false,
+      type,
+      start: { x: centerX - 100, y: centerY },
+      end: { x: centerX + 100, y: centerY },
+      elbows: [],
+    };
+
+    // 2. Apply specific layouts based on type
+    if (type === 'step') {
+      // Creates an 'S' or 'Z' step shape centered on screen
+      newLine.start = { x: centerX - 150, y: centerY - 75 };
+      newLine.elbows = [
+        { x: centerX, y: centerY - 75 }, // First corner
+        { x: centerX, y: centerY + 75 }, // Second corner
+      ];
+      newLine.end = { x: centerX + 150, y: centerY + 75 };
+    } else if (type === 'curve') {
+      // Creates a slight upward arc
+      newLine.start = { x: centerX - 150, y: centerY };
+      newLine.elbows = [{ x: centerX, y: centerY - 100 }]; // Peak of the curve
+      newLine.end = { x: centerX + 150, y: centerY };
+    }
+
+    // 3. Update state and trigger canvas refresh
+    this.lines.push(newLine);
     this.activeId = id;
     this.render();
   }
@@ -301,7 +418,7 @@ export class EditorComponent implements OnInit, AfterViewInit {
   }
 
   deleteActiveLine() {
-    this.lines = this.lines.filter(l => l.id !== this.activeId);
+    this.lines = this.lines.filter((l) => l.id !== this.activeId);
     this.activeId = null;
     this.render();
   }
@@ -311,11 +428,14 @@ export class EditorComponent implements OnInit, AfterViewInit {
   }
 
   scrollPalette(dir: number) {
-    this.scrollIndex = Math.max(0, Math.min(this.colors.length - 6, this.scrollIndex + dir));
+    this.scrollIndex = Math.max(
+      0,
+      Math.min(this.colors.length - 6, this.scrollIndex + dir),
+    );
   }
 
   addToProject() {
-    console.log("Saving project:", this.lines);
-    alert("Project Data Saved!");
+    console.log('Saving project:', this.lines);
+    alert('Project Data Saved!');
   }
 }
