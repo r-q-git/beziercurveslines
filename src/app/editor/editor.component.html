@@ -1,0 +1,117 @@
+<div class="relative w-screen h-screen overflow-hidden bg-white">
+  
+  <div class="fixed top-0 left-0 m-3 z-5 flex flex-column gap-2">
+    <button (click)="addNewLine('straight')" 
+            class="w-3rem h-3rem bg-white border-2 border-900 border-round shadow-2 cursor-pointer hover:bg-gray-100 flex align-items-center justify-content-center"
+            title="Add Straight Line">
+      <i class="pi pi-minus text-xl text-900"></i>
+    </button>
+    <button (click)="addNewLine('step')" 
+            class="w-3rem h-3rem bg-white border-2 border-900 border-round shadow-2 cursor-pointer hover:bg-gray-100 flex align-items-center justify-content-center"
+            title="Add Step Line">
+      <i class="pi pi-share-alt text-xl text-900 rotate-90"></i>
+    </button>
+    <button (click)="addNewLine('curve')" 
+            class="w-3rem h-3rem bg-white border-2 border-900 border-round shadow-2 cursor-pointer hover:bg-gray-100 flex align-items-center justify-content-center"
+            title="Add Curve Line">
+      <i class="pi pi-wave-pulse text-xl text-900"></i>
+    </button>
+  </div>
+
+  <div *ngIf="activeId" 
+       class="fixed top-0 left-50 m-3 p-2 bg-white border-round-pill shadow-6 z-4 flex align-items-center gap-2 border-1 border-200"
+       style="transform: translateX(-50%); height: 50px;">
+    
+    <div class="relative px-3 h-full flex align-items-center border-right-1 border-200">
+      <i class="pi pi-sliders-h cursor-pointer text-700 hover:text-blue-500" 
+         (click)="menuStates.width = !menuStates.width"></i>
+      
+      <div *ngIf="menuStates.width" 
+           class="absolute top-100 left-50 mt-3 bg-white border-1 border-300 border-round shadow-4 overflow-y-auto max-h-12rem w-4rem"
+           style="transform: translateX(-50%); z-index: 10;">
+        <div *ngFor="let w of widthOptions" 
+             class="p-2 text-center text-sm hover:bg-blue-50 cursor-pointer border-bottom-1 border-50" 
+             (click)="updateActiveLine(null, w); menuStates.width = false">
+          {{w}}px
+        </div>
+      </div>
+    </div>
+
+    <div class="flex align-items-center gap-2 px-2 h-full">
+      <i class="pi pi-chevron-left text-xs cursor-pointer text-400 hover:text-900" 
+         [ngClass]="{'opacity-20 pointer-events-none': scrollIndex === 0}" 
+         (click)="scrollPalette(-1)"></i>
+      
+      <div class="overflow-hidden" style="width: 172px;">
+        <div class="flex gap-2 transition-transform transition-duration-300" 
+             [style.transform]="'translateX(' + (-scrollIndex * 28) + 'px)'">
+          <div *ngFor="let c of colors" 
+               class="w-1rem h-1rem border-round-circle border-2 shadow-2 cursor-pointer flex-shrink-0 transition-all"
+               [style.backgroundColor]="c"
+               [style.borderColor]="activeLine?.color === c ? '#000' : 'white'"
+               [style.transform]="activeLine?.color === c ? 'scale(1.2)' : 'scale(1)'"
+               (click)="updateActiveLine(c, null)">
+          </div>
+        </div>
+      </div>
+
+      <i class="pi pi-chevron-right text-xs cursor-pointer text-400 hover:text-900" 
+         [ngClass]="{'opacity-20 pointer-events-none': scrollIndex >= colors.length - 6}" 
+         (click)="scrollPalette(1)"></i>
+    </div>
+
+    <div class="flex align-items-center gap-3 px-3 border-left-1 border-200 h-full">
+      <i class="pi cursor-pointer text-lg transition-colors" 
+         [ngClass]="isGlobalLocked ? 'pi-lock text-blue-500' : 'pi-lock-open text-700'"
+         (click)="toggleGlobalLock()"></i>
+      
+      <i class="pi pi-trash text-red-500 text-lg cursor-pointer hover:text-red-700" 
+         (click)="deleteActiveLine()"></i>
+    </div>
+  </div>
+
+  <div class="w-full h-full" 
+       style="background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px); background-size: 24px 24px;">
+    <canvas #editorCanvas 
+            (mousedown)="onMouseDown($event)" 
+            (mousemove)="onMouseMove($event)" 
+            (mouseup)="onMouseUp()"
+            (dblclick)="onDoubleClick($event)"
+            class="block w-full h-full">
+    </canvas>
+  </div>
+
+  <div class="fixed bottom-0 left-0 w-full z-5 flex flex-column align-items-end pointer-events-none">
+    
+    <button (click)="showFooter = !showFooter" 
+            class="m-4 p-button border-circle w-3rem h-3rem bg-white border-2 border-900 shadow-4 cursor-pointer flex align-items-center justify-content-center pointer-events-auto hover:bg-gray-100">
+        <i class="pi text-900 font-bold" [ngClass]="showFooter ? 'pi-chevron-down' : 'pi-search-plus'"></i>
+    </button>
+
+    <div class="w-full bg-white border-top-2 border-900 transition-all transition-duration-300 pointer-events-auto shadow-8" 
+         [style.height]="showFooter ? '80px' : '0'" 
+         [style.opacity]="showFooter ? '1' : '0'">
+      <div class="flex align-items-center justify-content-between h-full px-5">
+        
+        <button (click)="addToProject()" 
+                class="bg-blue-600 text-white border-none border-round px-4 py-2 font-bold cursor-pointer hover:bg-blue-700 shadow-2 flex align-items-center gap-2">
+          <i class="pi pi-plus-circle"></i> Add to Project
+        </button>
+        
+        <div class="flex align-items-center gap-4 w-4">
+            <span class="font-bold text-900 w-4rem text-right">{{ (zoomLevel * 100).toFixed(0) }}%</span>
+            <div class="flex-grow-1 flex align-items-center gap-2">
+              <i class="pi pi-minus text-xs text-500"></i>
+              <input type="range" min="0.1" max="3.0" step="0.1" 
+                     [(ngModel)]="zoomLevel" 
+                     (input)="render()" 
+                     class="flex-grow-1 cursor-pointer zoom-slider">
+              <i class="pi pi-plus text-xs text-500"></i>
+            </div>
+        </div>
+
+        <div class="text-xs text-500 font-medium uppercase tracking-wider">Canvas Editor v2.0</div>
+      </div>
+    </div>
+  </div>
+</div>
