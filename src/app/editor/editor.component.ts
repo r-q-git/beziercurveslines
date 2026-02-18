@@ -72,6 +72,14 @@ export class EditorComponent implements OnInit, AfterViewInit {
     return this.lines.find((l) => l.id === this.activeId);
   }
 
+  toggleLineStyle() {
+    if (this.activeLine) {
+      this.activeLine.type =
+        this.activeLine.type === 'curve' ? 'straight' : 'curve';
+      this.render();
+    }
+  }
+
   ngOnInit(): void {}
 
   ngAfterViewInit(): void {
@@ -338,59 +346,57 @@ export class EditorComponent implements OnInit, AfterViewInit {
     line: Line,
   ): Point | null {
     const pts = [line.start, ...line.elbows, line.end];
-    let bestPoint: Point | null = null;
+    let bestPt: Point | null = null;
     let minDist = 30;
 
-    if (line.type === 'straight' || line.type === 'step') {
-      // Keep your existing segment-based logic for straight lines
-      for (let i = 0; i < pts.length - 1; i++) {
-        const a = pts[i],
-          b = pts[i + 1];
-        const l2 = (a.x - b.x) ** 2 + (a.y - b.y) ** 2;
+    // 1. Magnetic Snap to Nodes
+    for (const pt of pts) {
+      if (Math.hypot(px - pt.x, py - pt.y) < 15) return { x: pt.x, y: pt.y };
+    }
+
+    // 2. Path Snapping
+    for (let i = 0; i < pts.length - 1; i++) {
+      const p1 = pts[i];
+      const p2 = pts[i + 1];
+
+      if (line.type === 'straight') {
+        const dx = p2.x - p1.x,
+          dy = p2.y - p1.y,
+          l2 = dx * dx + dy * dy;
         if (l2 === 0) continue;
-        let t = Math.max(
+        const t = Math.max(
           0,
-          Math.min(
-            1,
-            ((px - a.x) * (b.x - a.x) + (py - a.y) * (b.y - a.y)) / l2,
-          ),
+          Math.min(1, ((px - p1.x) * dx + (py - p1.y) * dy) / l2),
         );
-        const snapX = a.x + t * (b.x - a.x);
-        const snapY = a.y + t * (b.y - a.y);
-        const dist = Math.hypot(px - snapX, py - snapY);
-        if (dist < minDist) {
-          minDist = dist;
-          bestPoint = { x: snapX, y: snapY };
+        const sx = p1.x + t * dx,
+          sy = p1.y + t * dy,
+          d = Math.hypot(px - sx, py - sy);
+        if (d < minDist) {
+          minDist = d;
+          bestPt = { x: sx, y: sy };
         }
-      }
-    } else if (line.type === 'curve') {
-      // For curves, we sample the Bezier path
-      for (let i = 0; i < pts.length - 1; i++) {
-        const p1 = pts[i],
-          p2 = pts[i + 1];
+      } else {
+        // CURVE FIX: Use the exact same p0 and p3 as getPath
         const p0 = i > 0 ? pts[i - 1] : p1;
         const p3 = i < pts.length - 2 ? pts[i + 2] : p2;
 
-        // These must match your getPath logic exactly
-        const cp1x = p1.x + (p2.x - p0.x) / 6,
-          cp1y = p1.y + (p2.y - p0.y) / 6;
-        const cp2x = p2.x - (p3.x - p1.x) / 6,
-          cp2y = p2.y - (p3.y - p1.y) / 6;
+        const cp1x = p1.x + (p2.x - p0.x) / 6;
+        const cp1y = p1.y + (p2.y - p0.y) / 6;
+        const cp2x = p2.x - (p3.x - p1.x) / 6;
+        const cp2y = p2.y - (p3.y - p1.y) / 6;
 
-        // Sample 20 points along this specific curve segment
-        for (let t = 0; t <= 1; t += 0.05) {
+        for (let t = 0; t <= 1; t += 0.01) {
           const cx = this.getBezierPoint(t, p1.x, cp1x, cp2x, p2.x);
           const cy = this.getBezierPoint(t, p1.y, cp1y, cp2y, p2.y);
-          const dist = Math.hypot(px - cx, py - cy);
-
-          if (dist < minDist) {
-            minDist = dist;
-            bestPoint = { x: cx, y: cy };
+          const d = Math.hypot(px - cx, py - cy);
+          if (d < minDist) {
+            minDist = d;
+            bestPt = { x: cx, y: cy };
           }
         }
       }
     }
-    return bestPoint;
+    return bestPt;
   }
 
   // Helper to calculate the Cubic Bezier point at time t (0 to 1)
@@ -428,6 +434,7 @@ export class EditorComponent implements OnInit, AfterViewInit {
   private getPath(pts: Point[], type: string): string {
     if (pts.length < 2) return '';
     let d = `M ${pts[0].x} ${pts[0].y}`;
+
     if (type === 'straight') {
       for (let i = 1; i < pts.length; i++) d += ` L ${pts[i].x} ${pts[i].y}`;
     } else {
@@ -436,10 +443,12 @@ export class EditorComponent implements OnInit, AfterViewInit {
           p2 = pts[i + 1];
         const p0 = i > 0 ? pts[i - 1] : p1;
         const p3 = i < pts.length - 2 ? pts[i + 2] : p2;
+
         const cp1x = p1.x + (p2.x - p0.x) / 6,
           cp1y = p1.y + (p2.y - p0.y) / 6;
         const cp2x = p2.x - (p3.x - p1.x) / 6,
           cp2y = p2.y - (p3.y - p1.y) / 6;
+
         d += ` C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${p2.x} ${p2.y}`;
       }
     }
