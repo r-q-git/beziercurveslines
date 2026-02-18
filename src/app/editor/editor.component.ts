@@ -202,12 +202,16 @@ export class EditorComponent implements OnInit, AfterViewInit {
     const activeLine = this.activeLine;
     if (activeLine) {
       const deleteIdx = activeLine.elbows.findIndex((p) => {
-        // These offsets MUST match your drawActiveUI exactly
+        // 1. Hit-test for the red "X" button (at the 20px offset)
         const btnX = p.x + 20;
         const btnY = p.y - 20;
+        const overButton = Math.hypot(x - btnX, y - btnY) < 12;
 
-        // We check if the mouse (x, y) is within 12px of the button center
-        return Math.hypot(x - btnX, y - btnY) < 12;
+        // 2. Hit-test for the actual elbow point (the white circle)
+        const overPoint = Math.hypot(x - p.x, y - p.y) < 10;
+
+        // Delete if clicking the button OR if Ctrl is held while clicking the point
+        return overButton || (e.ctrlKey && overPoint);
       });
       if (deleteIdx !== -1) {
         activeLine.elbows.splice(deleteIdx, 1);
