@@ -1,17 +1,13 @@
 /* Ensure the component fills the entire viewport */
-/* src/styles.css */
-@import "primeicons/primeicons.css";
-@import "primeflex/primeflex.css";
-
 /* Reset body to ensure no hidden scrollbars interfere with the fixed UI */
-html, body {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
 }
-
 
 :host {
   display: block;
@@ -20,7 +16,9 @@ html, body {
   margin: 0;
   padding: 0;
   overflow: hidden;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial,
+    sans-serif;
 }
 
 /* Canvas Styling */
@@ -90,5 +88,7 @@ i {
 
 /* Ensure the navbar pill stays above the canvas but below PrimeNG dialogs if any */
 .shadow-6 {
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  box-shadow:
+    0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
