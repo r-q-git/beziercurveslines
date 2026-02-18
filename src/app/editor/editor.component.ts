@@ -349,7 +349,7 @@ export class EditorComponent implements OnInit, AfterViewInit {
     let bestPt: Point | null = null;
     let minDist = 30;
 
-    // 1. Magnetic Snap to Nodes
+    // 1. Terminal Snapping
     for (const pt of pts) {
       if (Math.hypot(px - pt.x, py - pt.y) < 15) return { x: pt.x, y: pt.y };
     }
@@ -376,14 +376,11 @@ export class EditorComponent implements OnInit, AfterViewInit {
           bestPt = { x: sx, y: sy };
         }
       } else {
-        // CURVE FIX: Use the exact same p0 and p3 as getPath
-        const p0 = i > 0 ? pts[i - 1] : p1;
-        const p3 = i < pts.length - 2 ? pts[i + 2] : p2;
-
-        const cp1x = p1.x + (p2.x - p0.x) / 6;
-        const cp1y = p1.y + (p2.y - p0.y) / 6;
-        const cp2x = p2.x - (p3.x - p1.x) / 6;
-        const cp2y = p2.y - (p3.y - p1.y) / 6;
+        // MATCHING ASYMMETRIC LOGIC
+        const cp1x = p1.x + (p2.x - p1.x) / 3;
+        const cp1y = p1.y;
+        const cp2x = p2.x - (p2.x - p1.x) / 3;
+        const cp2y = p2.y;
 
         for (let t = 0; t <= 1; t += 0.01) {
           const cx = this.getBezierPoint(t, p1.x, cp1x, cp2x, p2.x);
@@ -439,15 +436,17 @@ export class EditorComponent implements OnInit, AfterViewInit {
       for (let i = 1; i < pts.length; i++) d += ` L ${pts[i].x} ${pts[i].y}`;
     } else {
       for (let i = 0; i < pts.length - 1; i++) {
-        const p1 = pts[i],
-          p2 = pts[i + 1];
-        const p0 = i > 0 ? pts[i - 1] : p1;
-        const p3 = i < pts.length - 2 ? pts[i + 2] : p2;
+        const p1 = pts[i];
+        const p2 = pts[i + 1];
 
-        const cp1x = p1.x + (p2.x - p0.x) / 6,
-          cp1y = p1.y + (p2.y - p0.y) / 6;
-        const cp2x = p2.x - (p3.x - p1.x) / 6,
-          cp2y = p2.y - (p3.y - p1.y) / 6;
+        // ASYMMETRIC CALCULATION:
+        // Control points are based strictly on the current segment's start and end.
+        // This prevents "wobble" in other parts of the line.
+        const cp1x = p1.x + (p2.x - p1.x) / 3;
+        const cp1y = p1.y; // Horizontal bias for smooth flow
+
+        const cp2x = p2.x - (p2.x - p1.x) / 3;
+        const cp2y = p2.y; // Horizontal bias for smooth flow
 
         d += ` C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${p2.x} ${p2.y}`;
       }
