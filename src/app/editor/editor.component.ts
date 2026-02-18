@@ -569,6 +569,42 @@ export class EditorComponent implements OnInit, AfterViewInit {
       Math.min(this.colors.length - 6, this.scrollIndex + dir),
     );
   }
+
+  /**
+   * handle Zoom:
+   *
+   */
+  // Set the zoom back to exactly 100% (1.0)
+  // Set the zoom back to exactly 100% (1.0)
+  resetZoom() {
+    this.zoomLevel = 1.0;
+    this.render();
+  }
+
+  // Handles clicking the + and - icons
+  adjustZoom(delta: number) {
+    let newZoom = this.zoomLevel + delta;
+
+    // Clamp between 10% (0.1) and 200% (2.0)
+    if (newZoom < 0.1) newZoom = 0.1;
+    if (newZoom > 2.0) newZoom = 2.0;
+
+    // Rounding to avoid floating point precision issues (e.g., 0.30000000000000004)
+    this.zoomLevel = Math.round(newZoom * 10) / 10;
+    this.render();
+  }
+
+  // Handles when a user types a number like '150' into the input
+  onZoomInput(value: string) {
+    const num = parseFloat(value);
+    if (!isNaN(num)) {
+      // Convert e.g. 150 to 1.5, clamping between 10 and 200
+      const clamped = Math.min(Math.max(num, 10), 200);
+      this.zoomLevel = clamped / 100;
+      this.render();
+    }
+  }
+
   addToProject() {
     console.log('Saving project:', this.lines);
     alert('Project Data Saved!');
