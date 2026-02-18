@@ -1,0 +1,18 @@
+<svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+  <g stroke="currentColor"
+     stroke-width="1.5"
+     fill="none"
+     stroke-linecap="round"
+     stroke-linejoin="round">
+
+    <!-- Top -->
+    <path d="M6 9 Q12 4 18 9" />
+
+    <!-- Middle -->
+    <path d="M6 13 Q12 8 18 13" />
+
+    <!-- Bottom -->
+    <path d="M6 17 Q12 12 18 17" />
+
+  </g>
+</svg>

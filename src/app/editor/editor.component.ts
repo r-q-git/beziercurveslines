@@ -80,6 +80,16 @@ export class EditorComponent implements OnInit, AfterViewInit {
     }
   }
 
+  onWidthChange(value: string | number) {
+    const width = Number(value);
+    if (this.activeLine && !isNaN(width)) {
+      // We use Math.max(0.1, width) just so the line doesn't
+      // technically vanish, but otherwise it's exactly what they typed.
+      const userValue = Math.max(0.1, width);
+      this.updateActiveLine(null, userValue);
+    }
+  }
+
   ngOnInit(): void {}
 
   ngAfterViewInit(): void {
@@ -375,19 +385,19 @@ export class EditorComponent implements OnInit, AfterViewInit {
           minDist = d;
           bestPt = { x: sx, y: sy };
         }
-      } else {
-        // MATCHING ASYMMETRIC LOGIC
-        const cp1x = p1.x + (p2.x - p1.x) / 3;
-        const cp1y = p1.y;
-        const cp2x = p2.x - (p2.x - p1.x) / 3;
-        const cp2y = p2.y;
+      } else if (line.type === 'curve') {
+        const f = 0.35;
+        const cp1x = p1.x + (p2.x - p1.x) * f;
+        const cp1y = p1.y + (p2.y - p1.y) * 0.1;
+        const cp2x = p2.x - (p2.x - p1.x) * f;
+        const cp2y = p2.y - (p2.y - p1.y) * 0.1;
 
         for (let t = 0; t <= 1; t += 0.01) {
           const cx = this.getBezierPoint(t, p1.x, cp1x, cp2x, p2.x);
           const cy = this.getBezierPoint(t, p1.y, cp1y, cp2y, p2.y);
-          const d = Math.hypot(px - cx, py - cy);
-          if (d < minDist) {
-            minDist = d;
+          const dist = Math.hypot(px - cx, py - cy);
+          if (dist < minDist) {
+            minDist = dist;
             bestPt = { x: cx, y: cy };
           }
         }
@@ -432,21 +442,25 @@ export class EditorComponent implements OnInit, AfterViewInit {
     if (pts.length < 2) return '';
     let d = `M ${pts[0].x} ${pts[0].y}`;
 
-    if (type === 'straight') {
-      for (let i = 1; i < pts.length; i++) d += ` L ${pts[i].x} ${pts[i].y}`;
-    } else {
-      for (let i = 0; i < pts.length - 1; i++) {
-        const p1 = pts[i];
-        const p2 = pts[i + 1];
+    for (let i = 0; i < pts.length - 1; i++) {
+      const p1 = pts[i];
+      const p2 = pts[i + 1];
 
-        // ASYMMETRIC CALCULATION:
-        // Control points are based strictly on the current segment's start and end.
-        // This prevents "wobble" in other parts of the line.
-        const cp1x = p1.x + (p2.x - p1.x) / 3;
-        const cp1y = p1.y; // Horizontal bias for smooth flow
+      if (type === 'straight') {
+        d += ` L ${p2.x} ${p2.y}`;
+      } else if (type === 'step') {
+        d += ` L ${p2.x} ${p1.y} L ${p2.x} ${p2.y}`;
+      } else if (type === 'curve') {
+        // THE CONCAVE LOGIC:
+        // Instead of just horizontal bias, we use a percentage of the
+        // actual distance between the points to define the "pull."
+        const f = 0.35; // Curvature factor
 
-        const cp2x = p2.x - (p2.x - p1.x) / 3;
-        const cp2y = p2.y; // Horizontal bias for smooth flow
+        const cp1x = p1.x + (p2.x - p1.x) * f;
+        const cp1y = p1.y + (p2.y - p1.y) * 0.1; // Slight vertical pull for concavity
+
+        const cp2x = p2.x - (p2.x - p1.x) * f;
+        const cp2y = p2.y - (p2.y - p1.y) * 0.1; // Slight vertical pull for concavity
 
         d += ` C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${p2.x} ${p2.y}`;
       }
@@ -535,7 +549,7 @@ export class EditorComponent implements OnInit, AfterViewInit {
     let newLine: Line = {
       id,
       color: '#3b82f6',
-      width: 4,
+      width: 10,
       locked: false,
       type,
       start: { x: centerX - 100, y: centerY },
