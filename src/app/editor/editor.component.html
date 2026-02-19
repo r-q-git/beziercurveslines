@@ -25,17 +25,17 @@
 
   <div
     *ngIf="activeId"
-    class="fixed top-0 left-50 m-3 p-2 bg-white border-round-pill shadow-6 z-4 flex align-items-center gap-2"
+    class="fixed top-0 left-50 m-3 py-2 px-3 bg-white border-2 border-round-pill shadow-6 z-4 flex align-items-center gap-3"
     style="transform: translateX(-50%); height: 50px"
   >
-    <div class="relative pl-2 flex align-items-center h-full">
+    <div class="relative flex align-items-center h-full">
       <img
         (click)="toggleLineStyle()"
         [title]="
           activeLine?.type === 'curve' ? 'Switch to Pointy' : 'Switch to Smooth'
         "
         class="cursor-pointer"
-        style="width: 1.75rem;"
+        style="width: 1.75rem"
         [src]="
           activeLine?.type === 'curve'
             ? '/assets/roundy.svg'
@@ -44,7 +44,7 @@
       />
     </div>
     <div
-      class="relative px-3 h-full flex align-items-center border-right-1 border-200"
+      class="relative h-full flex align-items-center"
     >
       <i
         title="Line Width"
@@ -92,45 +92,26 @@
       </div>
     </div>
 
-    <div class="flex align-items-center gap-2 px-2 h-full">
-      <i
-        title="Select Last Color"
-        class="pi pi-chevron-left text-xs cursor-pointer text-400 hover:text-900"
-        [ngClass]="{ 'opacity-20 pointer-events-none': scrollIndex === 0 }"
-        (click)="scrollPalette(-1)"
-      ></i>
-
-      <div class="overflow-hidden" style="width: 170px">
-        <div
-          class="flex gap-2 transition-transform transition-duration-300"
-          [style.transform]="'translateX(' + -scrollIndex * 32 + 'px)'"
-        >
-          <div
-            *ngFor="let c of colors"
-            title="Color : {{ c }}"
-            class="w-2rem h-2rem border-2 shadow-2 cursor-pointer flex-shrink-0 transition-all border-round"
-            [style.backgroundColor]="c"
-            [style.borderColor]="activeLine?.color === c ? '#666' : 'white'"
-            [style.transform]="
-              activeLine?.color === c ? 'scale(1.1)' : 'scale(1)'
-            "
-            (click)="updateActiveLine(c, null)"
-          ></div>
-        </div>
+    <div class="flex align-items-center justify-content-center h-full">
+      <div
+        class="relative w-2rem h-2rem border-2 border-circle shadow-2 cursor-pointer border-round transition-all  flex align-items-center justify-content-center"
+        [style.backgroundColor]="activeLine?.color || '#000000'"
+        [style.borderColor]="'#ddd'"
+        (click)="colorInput.click()"
+        title="Change Color"
+      >
+        <input
+          #colorInput
+          type="color"
+          class="absolute top-100 opacity-0 w-full h-full cursor-pointer"
+          [value]="activeLine?.color || '#000000'"
+          (input)="updateActiveLine($any($event.target).value, null)"
+        />
       </div>
-
-      <i
-        title="Select Next Color"
-        class="pi pi-chevron-right text-xs cursor-pointer text-400 hover:text-900"
-        [ngClass]="{
-          'opacity-20 pointer-events-none': scrollIndex >= colors.length - 5,
-        }"
-        (click)="scrollPalette(1)"
-      ></i>
     </div>
 
     <div
-      class="flex align-items-center justify-center-safe gap-3 px-3 border-left-1 border-200 h-full"
+      class="flex align-items-center justify-center-safe gap-3 h-full"
     >
       <i
         title="Lock Line"
