@@ -45,7 +45,7 @@ export class EditorComponent implements OnInit, AfterViewInit {
 
   // --- UI Controls ---
   menuStates = { width: false };
-  
+
   scrollIndex = 0;
 
   get activeLine() {
@@ -264,19 +264,31 @@ export class EditorComponent implements OnInit, AfterViewInit {
     let foundUI = false;
 
     // 1. PRIORITIZE ACTIVE LINE UI (Buttons)
-    if (this.activeLine && !this.isGlobalLocked) {
+    if (this.activeLine) {
       const box = this.getBoundingBox(this.activeLine);
+
+      // 1. Detect if mouse is over Move or Rotate buttons
       const isOverMove =
         Math.hypot(x - (box.midX - 25), y - (box.minY - 40)) < 15;
       const isOverRotate =
         Math.hypot(x - (box.midX + 25), y - (box.minY - 40)) < 15;
+
+      // 2. Detect if mouse is over any Elbow Delete buttons
       const isOverDelete = this.activeLine.elbows.some(
         (p) => Math.hypot(x - (p.x + 25), y - (p.y - 25)) < 12,
       );
 
       if (isOverMove || isOverRotate || isOverDelete) {
-        this.canvasRef.nativeElement.style.cursor = 'pointer';
         foundUI = true;
+
+        // 3. Conditional Cursor Logic
+        if (this.isGlobalLocked) {
+          // Show "not-allowed" (circle with slash) when locked
+          this.canvasRef.nativeElement.style.cursor = 'not-allowed';
+        } else {
+          // Show standard "pointer" when editable
+          this.canvasRef.nativeElement.style.cursor = 'pointer';
+        }
       }
     }
 
@@ -647,7 +659,6 @@ export class EditorComponent implements OnInit, AfterViewInit {
   toggleGlobalLock() {
     this.isGlobalLocked = !this.isGlobalLocked;
   }
-  
 
   /**
    * handle Zoom:
