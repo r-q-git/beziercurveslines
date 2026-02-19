@@ -41,7 +41,6 @@ export class EditorComponent implements OnInit, AfterViewInit {
   // --- Zoom & Footer State ---
   zoomLevel: number = 1.0;
   showFooter: boolean = false;
-  isGlobalLocked: boolean = false;
 
   // --- UI Controls ---
   menuStates = { width: false };
@@ -87,36 +86,44 @@ export class EditorComponent implements OnInit, AfterViewInit {
 
   // --- Core Rendering ---
   render() {
-    if (!this.ctx) return;
-    const canvas = this.canvasRef.nativeElement;
-    this.ctx.clearRect(0, 0, canvas.width, canvas.height);
+  if (!this.ctx) return;
+  const canvas = this.canvasRef.nativeElement;
+  this.ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    this.ctx.save();
-    this.ctx.translate(canvas.width / 2, canvas.height / 2);
-    this.ctx.scale(this.zoomLevel, this.zoomLevel);
-    this.ctx.translate(-canvas.width / 2, -canvas.height / 2);
+  this.ctx.save();
+  this.ctx.translate(canvas.width / 2, canvas.height / 2);
+  this.ctx.scale(this.zoomLevel, this.zoomLevel);
+  this.ctx.translate(-canvas.width / 2, -canvas.height / 2);
 
-    this.lines.forEach((line) => {
-      const pts = [line.start, ...line.elbows, line.end];
-      const path = new Path2D(this.getPath(pts, line.type));
-      this.ctx.strokeStyle = line.color;
-      this.ctx.lineWidth = line.width;
-      this.ctx.lineCap = 'round';
-      this.ctx.lineJoin = 'round';
-      this.ctx.stroke(path);
+  this.lines.forEach((line) => {
+    const pts = [line.start, ...line.elbows, line.end];
+    const path = new Path2D(this.getPath(pts, line.type));
+    
+    this.ctx.strokeStyle = line.color;
+    this.ctx.lineWidth = line.width;
+    this.ctx.lineCap = 'round';
+    this.ctx.lineJoin = 'round';
+    this.ctx.stroke(path);
 
-      if (line.id === this.activeId) {
-        this.drawActiveUI(line);
-      }
-    });
+    // Draw UI (Buttons/Rotate/Move) only for the active line
+    if (line.id === this.activeId) {
+      this.drawActiveUI(line);
+    }
+    
+    this.ctx.globalAlpha = 1.0; // Reset alpha for next elements
+  });
 
-    // Draw the Pointer Icon if hovering over a line
-    if (this.previewElbow && !this.dragging && !this.isGlobalLocked) {
+  // Draw the Pointer Icon (Snapping)
+  // Logic: Show it only if we have a point AND the line being hovered is NOT locked
+  if (this.previewElbow && !this.dragging) {
+    const hoveredLine = this.lines.find(l => l.id === this.hoveredLineId);
+    if (hoveredLine && !hoveredLine.locked) {
       this.drawPointerIcon(this.previewElbow.x, this.previewElbow.y);
     }
-
-    this.ctx.restore();
   }
+
+  this.ctx.restore();
+}
 
   private drawPointerIcon(x: number, y: number) {
     this.ctx.save();
@@ -140,10 +147,18 @@ export class EditorComponent implements OnInit, AfterViewInit {
 
   private drawActiveUI(line: Line) {
     const box = this.getBoundingBox(line);
-    this.drawIcon(box.midX - 25, box.minY - 40, '✥');
-    this.drawIcon(box.midX + 25, box.minY - 40, '↻');
+
+    // Only draw Move (✥) and Rotate (↻) icons if the line is NOT locked
+    if (!line.locked) {
+      this.drawIcon(box.midX - 25, box.minY - 40, '✥');
+      this.drawIcon(box.midX + 25, box.minY - 40, '↻');
+    } else {
+      // Optional: Draw a Lock icon in the center to show status
+      this.drawIcon(box.midX, box.minY - 40, '🔒');
+    }
 
     line.elbows.forEach((p) => {
+      // Draw the elbow point itself
       this.ctx.fillStyle = '#fff';
       this.ctx.strokeStyle = '#000';
       this.ctx.lineWidth = 1;
@@ -152,20 +167,23 @@ export class EditorComponent implements OnInit, AfterViewInit {
       this.ctx.fill();
       this.ctx.stroke();
 
-      // The Delete Button - Fixed Offset
-      const offX = p.x + 20;
-      const offY = p.y - 20;
-      this.ctx.fillStyle = '#ef4444';
-      this.ctx.beginPath();
-      this.ctx.arc(offX, offY, 8, 0, Math.PI * 2);
-      this.ctx.fill();
-      this.ctx.fillStyle = '#fff';
-      this.ctx.font = 'bold 10px Arial';
-      this.ctx.textAlign = 'center';
-      this.ctx.textBaseline = 'middle';
-      this.ctx.fillText('✕', offX, offY);
+      // Only draw the Delete Button for this elbow if NOT locked
+      if (!line.locked) {
+        const offX = p.x + 20;
+        const offY = p.y - 20;
+        this.ctx.fillStyle = '#ef4444';
+        this.ctx.beginPath();
+        this.ctx.arc(offX, offY, 8, 0, Math.PI * 2);
+        this.ctx.fill();
+        this.ctx.fillStyle = '#fff';
+        this.ctx.font = 'bold 10px Arial';
+        this.ctx.textAlign = 'center';
+        this.ctx.textBaseline = 'middle';
+        this.ctx.fillText('✕', offX, offY);
+      }
     });
 
+    // Endpoints always visible for context, but you could hide these too if preferred
     [line.start, line.end].forEach((p) => {
       this.ctx.fillStyle = '#fff';
       this.ctx.strokeStyle = '#000';
@@ -195,61 +213,68 @@ export class EditorComponent implements OnInit, AfterViewInit {
   // --- Interaction ---
   onMouseDown(e: MouseEvent) {
     const { x, y } = this.getAdjustedCoords(e);
-    if (this.isGlobalLocked) return;
 
     const activeLine = this.activeLine;
     if (activeLine) {
-      const deleteIdx = activeLine.elbows.findIndex((p) => {
-        // 1. Hit-test for the red "X" button (at the 20px offset)
-        const btnX = p.x + 20;
-        const btnY = p.y - 20;
-        const overButton = Math.hypot(x - btnX, y - btnY) < 12;
+      // 1. ELBOW DELETE LOGIC (Only if NOT locked)
+      if (!activeLine.locked) {
+        const deleteIdx = activeLine.elbows.findIndex((p) => {
+          const btnX = p.x + 20;
+          const btnY = p.y - 20;
+          const overButton = Math.hypot(x - btnX, y - btnY) < 12;
+          const overPoint = Math.hypot(x - p.x, y - p.y) < 10;
+          return overButton || (e.ctrlKey && overPoint);
+        });
 
-        // 2. Hit-test for the actual elbow point (the white circle)
-        const overPoint = Math.hypot(x - p.x, y - p.y) < 10;
-
-        // Delete if clicking the button OR if Ctrl is held while clicking the point
-        return overButton || (e.ctrlKey && overPoint);
-      });
-      if (deleteIdx !== -1) {
-        activeLine.elbows.splice(deleteIdx, 1);
-        this.render();
-        return;
+        if (deleteIdx !== -1) {
+          activeLine.elbows.splice(deleteIdx, 1);
+          this.render();
+          return;
+        }
       }
 
-      const pts = [activeLine.start, activeLine.end, ...activeLine.elbows];
-      const point = pts.find((pt) => Math.hypot(x - pt.x, y - pt.y) < 12);
-      if (point) {
-        this.dragging = { type: 'point', ref: point };
-        return;
+      // 2. POINT DRAGGING (Only if NOT locked)
+      if (!activeLine.locked) {
+        const pts = [activeLine.start, activeLine.end, ...activeLine.elbows];
+        const point = pts.find((pt) => Math.hypot(x - pt.x, y - pt.y) < 12);
+        if (point) {
+          this.dragging = { type: 'point', ref: point };
+          return;
+        }
       }
 
-      const box = this.getBoundingBox(activeLine);
-      if (Math.hypot(x - (box.midX - 25), y - (box.minY - 40)) < 15) {
-        this.dragging = { type: 'line', line: activeLine, lx: x, ly: y };
-        return;
-      }
+      // 3. MOVE & ROTATE LOGIC (Only if NOT locked)
+      if (!activeLine.locked) {
+        const box = this.getBoundingBox(activeLine);
 
-      if (Math.hypot(x - (box.midX + 25), y - (box.minY - 40)) < 15) {
-        const center = {
-          x: (activeLine.start.x + activeLine.end.x) / 2,
-          y: (activeLine.start.y + activeLine.end.y) / 2,
-        };
-        this.dragging = {
-          type: 'rotate',
-          line: activeLine,
-          center,
-          startAngle: Math.atan2(y - center.y, x - center.x),
-        };
-        return;
+        // Hit-test Move Button
+        if (Math.hypot(x - (box.midX - 25), y - (box.minY - 40)) < 15) {
+          this.dragging = { type: 'line', line: activeLine, lx: x, ly: y };
+          return;
+        }
+
+        // Hit-test Rotate Button
+        if (Math.hypot(x - (box.midX + 25), y - (box.minY - 40)) < 15) {
+          const center = {
+            x: (activeLine.start.x + activeLine.end.x) / 2,
+            y: (activeLine.start.y + activeLine.end.y) / 2,
+          };
+          this.dragging = {
+            type: 'rotate',
+            line: activeLine,
+            center,
+            startAngle: Math.atan2(y - center.y, x - center.x),
+          };
+          return;
+        }
       }
     }
 
+    // 4. LINE SELECTION (Always allowed so you can select a line to unlock it)
     const clickedLine = this.getLineAt(x, y);
     this.activeId = clickedLine ? clickedLine.id : null;
     this.render();
   }
-
   onMouseMove(e: MouseEvent) {
     const { x, y } = this.getAdjustedCoords(e);
     this.previewElbow = null; // Clear previous frame's snap point
@@ -266,14 +291,15 @@ export class EditorComponent implements OnInit, AfterViewInit {
     // 1. PRIORITIZE ACTIVE LINE UI (Buttons)
     if (this.activeLine) {
       const box = this.getBoundingBox(this.activeLine);
+      const isLocked = this.activeLine.locked; // Use the specific line's locked property
 
-      // 1. Detect if mouse is over Move or Rotate buttons
+      // Detect Move and Rotate ONLY if the line is NOT locked
       const isOverMove =
-        Math.hypot(x - (box.midX - 25), y - (box.minY - 40)) < 15;
+        !isLocked && Math.hypot(x - (box.midX - 25), y - (box.minY - 40)) < 15;
       const isOverRotate =
-        Math.hypot(x - (box.midX + 25), y - (box.minY - 40)) < 15;
+        !isLocked && Math.hypot(x - (box.midX + 25), y - (box.minY - 40)) < 15;
 
-      // 2. Detect if mouse is over any Elbow Delete buttons
+      // Detect Delete buttons (we keep detecting them even if locked so we can show 'not-allowed')
       const isOverDelete = this.activeLine.elbows.some(
         (p) => Math.hypot(x - (p.x + 25), y - (p.y - 25)) < 12,
       );
@@ -281,26 +307,29 @@ export class EditorComponent implements OnInit, AfterViewInit {
       if (isOverMove || isOverRotate || isOverDelete) {
         foundUI = true;
 
-        // 3. Conditional Cursor Logic
-        if (this.isGlobalLocked) {
-          // Show "not-allowed" (circle with slash) when locked
-          this.canvasRef.nativeElement.style.cursor = 'not-allowed';
-        } else {
-          // Show standard "pointer" when editable
-          this.canvasRef.nativeElement.style.cursor = 'pointer';
-        }
+        // If the line is locked, the only UI interaction possible was Delete (detected above)
+        // We show 'not-allowed' for locked lines, 'pointer' for unlocked
+        this.canvasRef.nativeElement.style.cursor = isLocked
+          ? 'not-allowed'
+          : 'pointer';
       }
     }
 
     if (!foundUI) {
-      // 2. FIND TOP-MOST LINE (Searching backwards so top lines are found first)
+      // 2. FIND TOP-MOST LINE
       const targetLine = this.getLineAt(x, y);
 
-      if (targetLine && !this.isGlobalLocked) {
+      if (targetLine) {
         this.hoveredLineId = targetLine.id;
-        // Get the snap point ONLY for the line the mouse is actually over
-        this.previewElbow = this.getClosestPointOnLine(x, y, targetLine);
-        this.canvasRef.nativeElement.style.cursor = 'none'; // Show custom red cursor
+
+        // If the hovered line is locked, show 'not-allowed'
+        if (targetLine.locked) {
+          this.canvasRef.nativeElement.style.cursor = 'not-allowed';
+        } else {
+          // Unlocked lines get the custom red snap cursor
+          this.previewElbow = this.getClosestPointOnLine(x, y, targetLine);
+          this.canvasRef.nativeElement.style.cursor = 'none';
+        }
       } else {
         this.hoveredLineId = null;
         this.canvasRef.nativeElement.style.cursor = 'crosshair';
@@ -316,7 +345,7 @@ export class EditorComponent implements OnInit, AfterViewInit {
   onDoubleClick(e: MouseEvent) {
     const { x, y } = this.getAdjustedCoords(e);
     const line = this.activeLine;
-    if (!line || this.isGlobalLocked) return;
+    if (!line || line.locked) return;
 
     // Use the calculated preview point instead of the raw mouse X/Y
     const snap = this.getClosestPointOnLine(x, y, line);
@@ -643,10 +672,25 @@ export class EditorComponent implements OnInit, AfterViewInit {
     this.render();
   }
 
-  updateActiveLine(c: string | null, w: number | null) {
+  updateActiveLine(
+    c: string | null,
+    w: number | null,
+    lockToggle: boolean = false,
+  ) {
     if (!this.activeLine) return;
-    if (c) this.activeLine.color = c;
-    if (w) this.activeLine.width = w;
+
+    // 1. Handle the Lock Toggle first
+    if (lockToggle) {
+      this.activeLine.locked = !this.activeLine.locked;
+    }
+
+    // 2. Only allow property changes if the line is NOT locked
+    // This prevents the color/width from changing while the line is 'frozen'
+    if (!this.activeLine.locked) {
+      if (c) this.activeLine.color = c;
+      if (w) this.activeLine.width = w;
+    }
+
     this.render();
   }
 
@@ -656,9 +700,7 @@ export class EditorComponent implements OnInit, AfterViewInit {
     this.render();
   }
 
-  toggleGlobalLock() {
-    this.isGlobalLocked = !this.isGlobalLocked;
-  }
+
 
   /**
    * handle Zoom:

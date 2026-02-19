@@ -125,8 +125,8 @@
       <i
         title="Lock Line"
         class="pi cursor-pointer text-lg"
-        [ngClass]="isGlobalLocked ? 'pi-lock ' : 'pi-lock-open'"
-        (click)="toggleGlobalLock()"
+        [ngClass]="activeLine?.locked ? 'pi-lock ' : 'pi-lock-open'"
+        (click)="updateActiveLine(null, null, true)"
       ></i>
 
       <i
