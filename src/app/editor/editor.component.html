@@ -31,7 +31,7 @@
 
   <div
     *ngIf="activeId"
-    class="fixed top-0 left-50 m-3 py-2 px-3  border-2 border-round-pill shadow-6 z-4 flex align-items-center gap-3 maincolorborder background"
+    class="fixed top-0 left-50 m-3 py-2 px-3 border-2 border-round-pill shadow-6 z-4 flex align-items-center gap-3 maincolorborder background"
     style="transform: translateX(-50%); height: 50px"
   >
     <div class="relative flex align-items-center h-full">
@@ -72,7 +72,7 @@
               [value]="activeLine?.width || 2"
               (input)="onWidthChange($any($event.target).value)"
               id="maincolor"
-              class="w-3rem p-1 text-center border-1 border-round text-sm maincolorborder"
+              class="w-3rem p-1 text-center border-1 border-round text-sm maincolorborder background"
             />
           </div>
 
@@ -160,7 +160,7 @@
   >
     <button
       (click)="showFooter = !showFooter"
-      class="m-4 p-button border-circle w-3rem h-3rem bg-white border-2 shadow-4 cursor-pointer flex align-items-center justify-content-center pointer-events-auto maincolorborder"
+      class="m-4 p-button border-circle w-3rem h-3rem border-2 shadow-4 cursor-pointer flex align-items-center justify-content-center pointer-events-auto maincolorborder hoverbackgroundclass"
       id="maincolor"
     >
       <i
@@ -179,7 +179,7 @@
         <div class="flex align-items-center gap-4 w-auto">
           <div class="flex align-items-center gap-2">
             <i
-              class="pi pi-minus cursor-pointer text-xs text-500 bg-white border-none px-4 py-2 font-bold shadow-2 flex align-items-center gap-2"
+              class="pi pi-minus cursor-pointer text-xs text-500 border-none px-4 py-2 font-bold shadow-2 flex align-items-center gap-2 background hoverbackgroundclass"
               (click)="adjustZoom(-0.1)"
             ></i>
 
@@ -190,17 +190,17 @@
               step="0.1"
               [(ngModel)]="zoomLevel"
               (input)="render()"
-              class="cursor-pointer zoom-slider"
+              class="cursor-pointer zoom-slider background"
             />
 
             <i
-              class="pi pi-plus px-4 py-2 bg-white font-bold cursor-pointer shadow-2 flex align-items-center gap-2"
+              class="pi pi-plus px-4 py-2 font-bold cursor-pointer shadow-2 flex align-items-center gap-2 background hoverbackgroundclass"
               (click)="adjustZoom(0.1)"
             ></i>
 
             <button
               (click)="resetZoom()"
-              class="px-4 py-2 border-none bg-white font-bold cursor-pointer shadow-2 flex align-items-center gap-2"
+              class="px-4 py-2 border-none font-bold cursor-pointer shadow-2 flex align-items-center gap-2 background hoverbackgroundclass"
               id="maincolor"
             >
               Reset Zoom
@@ -223,7 +223,7 @@
         <button
           (click)="addToProject()"
           id="maincolor"
-          class="bg-white border-none px-4 py-2 font-bold cursor-pointer shadow-2 flex align-items-center gap-2"
+          class="border-none px-4 py-2 font-bold cursor-pointer shadow-2 flex align-items-center gap-2 background hoverbackgroundclass"
         >
           <i class="pi pi-plus-circle"></i> Add to Project
         </button>

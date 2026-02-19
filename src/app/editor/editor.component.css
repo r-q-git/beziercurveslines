@@ -102,3 +102,8 @@ i {
 input[type="range"] {
   accent-color: #ff9100; /* Sets the color of the thumb and the track portion before it */
 }
+
+input:focus {
+  border-color: #ff9100; /* Sets the color of the thumb and the track portion before it */
+  outline: none;
+}
