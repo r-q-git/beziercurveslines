@@ -5,7 +5,7 @@
       class="w-3rem h-3rem border-2 border-round shadow-2 cursor-pointer flex align-items-center justify-content-center background"
       title="Add Straight Line"
       id="addbuttons"
-      style="border: 1px solid #ff9100;"
+      style="border: 1px solid #ff9100"
     >
       <img src="/assets/line.svg" />
     </button>
@@ -14,7 +14,7 @@
       class="w-3rem h-3rem border-2 border-round shadow-2 cursor-pointer flex align-items-center justify-content-center background"
       title="Add Step Line"
       id="addbuttons"
-      style="border: 1px solid #ff9100;"
+      style="border: 1px solid #ff9100"
     >
       <img src="/assets/step.svg" class="" />
     </button>
@@ -23,7 +23,7 @@
       class="w-3rem h-3rem border-2 border-round shadow-2 cursor-pointer flex align-items-center justify-content-center background"
       title="Add Curve Line"
       id="addbuttons"
-      style="border: 1px solid #ff9100;"
+      style="border: 1px solid #ff9100"
     >
       <img src="/assets/curve.svg" class="" />
     </button>
@@ -31,7 +31,7 @@
 
   <div
     *ngIf="activeId"
-    class="fixed top-0 left-50 m-3 py-2 px-3 bg-white border-2 border-round-pill shadow-6 z-4 flex align-items-center gap-3 maincolorborder"
+    class="fixed top-0 left-50 m-3 py-2 px-3  border-2 border-round-pill shadow-6 z-4 flex align-items-center gap-3 maincolorborder background"
     style="transform: translateX(-50%); height: 50px"
   >
     <div class="relative flex align-items-center h-full">
@@ -49,7 +49,7 @@
         "
       />
     </div>
-    <div class="relative h-full flex align-items-center">
+    <div class="relative h-full flex align-items-center" id="maincolor">
       <i
         title="Line Width"
         class="pi pi-bars cursor-pointer text-700"
@@ -90,7 +90,7 @@
             <button
               *ngFor="let val of [10, 15, 20]"
               (click)="updateActiveLine(null, val)"
-              class="p-1 text-xs border-1 border-200 bg-gray-50 border-round hover:bg-blue-50 cursor-pointer flex-1 maincolorborder"
+              class="p-1 text-xs border-1 border-200 border-round cursor-pointer flex-1 maincolorborder hoverbackgroundclass"
               id="maincolor"
             >
               {{ val }}
@@ -101,11 +101,10 @@
     </div>
 
     <div class="flex align-items-center justify-content-center h-full">
-
       <div
         class="relative w-2rem h-2rem border-2 border-circle shadow-2 cursor-pointer border-round transition-all flex align-items-center justify-content-center"
         [style.backgroundColor]="activeLine?.color || '#000000'"
-        [style.borderColor]="'#ddd'"
+        [style.borderColor]="'#ff9100'"
         (click)="colorInput.click()"
         title="Change Color"
       >
@@ -119,13 +118,14 @@
       </div>
     </div>
 
-    <div class="flex align-items-center justify-center-safe gap-3 h-full">
+    <div
+      class="flex align-items-center justify-center-safe gap-3 h-full"
+      id="maincolor"
+    >
       <i
         title="Lock Line"
-        class="pi cursor-pointer text-lg transition-colors"
-        [ngClass]="
-          isGlobalLocked ? 'pi-lock text-blue-500' : 'pi-lock-open text-700'
-        "
+        class="pi cursor-pointer text-lg"
+        [ngClass]="isGlobalLocked ? 'pi-lock ' : 'pi-lock-open'"
         (click)="toggleGlobalLock()"
       ></i>
 
@@ -200,8 +200,9 @@
 
             <button
               (click)="resetZoom()"
-              class=" px-4 py-2 border-none bg-white font-bold cursor-pointer shadow-2 flex align-items-center gap-2"
-              id="maincolor">
+              class="px-4 py-2 border-none bg-white font-bold cursor-pointer shadow-2 flex align-items-center gap-2"
+              id="maincolor"
+            >
               Reset Zoom
             </button>
           </div>
@@ -222,7 +223,7 @@
         <button
           (click)="addToProject()"
           id="maincolor"
-          class="bg-white  border-none px-4 py-2 font-bold cursor-pointer shadow-2 flex align-items-center gap-2"
+          class="bg-white border-none px-4 py-2 font-bold cursor-pointer shadow-2 flex align-items-center gap-2"
         >
           <i class="pi pi-plus-circle"></i> Add to Project
         </button>

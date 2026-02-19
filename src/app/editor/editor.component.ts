@@ -45,27 +45,7 @@ export class EditorComponent implements OnInit, AfterViewInit {
 
   // --- UI Controls ---
   menuStates = { width: false };
-  widthOptions = Array.from({ length: 100 }, (_, i) => i + 1);
-  colors = [
-    '#3b82f6',
-    '#22c55e',
-    '#eab308',
-    '#ef4444',
-    '#000000',
-    '#8b5cf6',
-    '#ec4899',
-    '#f97316',
-    '#06b6d4',
-    '#10b981',
-    '#00bfff',
-    '#00e676',
-    '#ff8c00',
-    '#ff0000',
-    '#ff00ff',
-    '#ffff00',
-    '#00ffff',
-    // ... truncated for brevity, keep your full array in your local file
-  ];
+  
   scrollIndex = 0;
 
   get activeLine() {
@@ -142,9 +122,9 @@ export class EditorComponent implements OnInit, AfterViewInit {
     this.ctx.save();
     // ----- Outer dashed circle -----
     this.ctx.beginPath();
-    this.ctx.setLineDash([4, 4, 4, 4, 4]); // dash pattern
-    this.ctx.lineWidth = 1.5;
-    this.ctx.strokeStyle = 'red';
+    this.ctx.setLineDash([3, 3, 3, 3, 3]); // dash pattern
+    this.ctx.lineWidth = 2;
+    this.ctx.strokeStyle = '#ff9100';
     this.ctx.lineCap = 'round';
     this.ctx.arc(x, y, 10, 0, Math.PI * 2);
     this.ctx.stroke();
@@ -152,8 +132,8 @@ export class EditorComponent implements OnInit, AfterViewInit {
     // ----- Center solid circle -----
     this.ctx.beginPath();
     this.ctx.setLineDash([]); // reset dash
-    this.ctx.fillStyle = 'red';
-    this.ctx.arc(x, y, 2, 0, Math.PI * 2);
+    this.ctx.fillStyle = '#ff9100';
+    this.ctx.arc(x, y, 3, 0, Math.PI * 2);
     this.ctx.fill();
     this.ctx.restore();
   }
@@ -200,12 +180,12 @@ export class EditorComponent implements OnInit, AfterViewInit {
   private drawIcon(x: number, y: number, icon: string) {
     this.ctx.save();
     this.ctx.lineWidth = 1;
-    this.ctx.fillStyle = '#fff';
-    this.ctx.strokeStyle = '#000';
+    this.ctx.fillStyle = '#f6f9fb';
+    this.ctx.strokeStyle = '#ff9100';
     this.ctx.fillRect(x - 12, y - 12, 24, 24);
     this.ctx.strokeRect(x - 12, y - 12, 24, 24);
-    this.ctx.fillStyle = '#000';
-    this.ctx.font = '16px Arial';
+    this.ctx.fillStyle = '#ff9100';
+    this.ctx.font = '22px extrabold Arial';
     this.ctx.textAlign = 'center';
     this.ctx.textBaseline = 'middle';
     this.ctx.fillText(icon, x, y);
@@ -667,12 +647,7 @@ export class EditorComponent implements OnInit, AfterViewInit {
   toggleGlobalLock() {
     this.isGlobalLocked = !this.isGlobalLocked;
   }
-  scrollPalette(dir: number) {
-    this.scrollIndex = Math.max(
-      0,
-      Math.min(this.colors.length - 6, this.scrollIndex + dir),
-    );
-  }
+  
 
   /**
    * handle Zoom:

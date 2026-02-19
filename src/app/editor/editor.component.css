@@ -75,15 +75,19 @@ i {
   transition: color 0.2s;
 }
 
-#maincolor{
+#maincolor {
   color: #ff9100;
 }
 
-.maincolorborder{
+.maincolorborder {
   border-color: #ff9100;
 }
 
-.background{
+.maincolorbackground {
+  background-color: #ff9100;
+}
+
+.background {
   background: #f6f9fb;
 }
 
@@ -91,6 +95,10 @@ i {
   background: #fff4e5;
 }
 
-input[type='range'] {
+.hoverbackgroundclass:hover {
+  background: #fff4e5;
+}
+
+input[type="range"] {
   accent-color: #ff9100; /* Sets the color of the thumb and the track portion before it */
 }
