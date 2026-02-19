@@ -79,6 +79,10 @@ i {
   color: #ff9100;
 }
 
+.maincolor {
+  color: #ff9100;
+}
+
 .maincolorborder {
   border-color: #ff9100;
 }
@@ -107,3 +111,16 @@ input:focus {
   border-color: #ff9100; /* Sets the color of the thumb and the track portion before it */
   outline: none;
 }
+
+/* Hide arrows for Chrome, Safari, Edge, Opera */
+.no-spinners::-webkit-outer-spin-button,
+.no-spinners::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Hide arrows for Firefox */
+.no-spinners {
+  -moz-appearance: textfield;
+}
+

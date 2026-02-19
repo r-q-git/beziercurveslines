@@ -154,7 +154,7 @@ export class EditorComponent implements OnInit, AfterViewInit {
       this.drawIcon(box.midX + 25, box.minY - 40, '↻');
     } else {
       // Optional: Draw a Lock icon in the center to show status
-      this.drawIcon(box.midX, box.minY - 40, '🔒');
+      // this.drawIcon(box.midX, box.minY - 40, '');
     }
 
     line.elbows.forEach((p) => {
@@ -697,8 +697,18 @@ export class EditorComponent implements OnInit, AfterViewInit {
   deleteActiveLine() {
     this.lines = this.lines.filter((l) => l.id !== this.activeId);
     this.activeId = null;
+
     this.render();
   }
+
+  adjustWidth(delta: number) {
+  if (!this.activeLine || this.activeLine.locked) return;
+  
+  const currentWidth = this.activeLine.width || 2;
+  const newWidth = Math.max(1, currentWidth + delta); // Prevent width < 1
+  
+  this.onWidthChange(newWidth);
+}
 
 
 

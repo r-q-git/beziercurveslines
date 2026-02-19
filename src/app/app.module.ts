@@ -18,7 +18,7 @@ import { EditorComponent } from './editor/editor.component';
 @NgModule({
   declarations: [
     AppComponent,
-    EditorComponent // Declare it here
+    EditorComponent
   ],
   imports: [
     BrowserModule,

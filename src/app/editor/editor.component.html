@@ -2,7 +2,7 @@
   <div class="fixed top-0 left-0 m-2 z-5 flex gap-2">
     <button
       (click)="addNewLine('straight')"
-      class="w-3rem h-3rem border-2 border-round shadow-2 cursor-pointer flex align-items-center justify-content-center background"
+      class="w-3rem h-3rem border-round-xl shadow-2 cursor-pointer flex align-items-center justify-content-center background"
       title="Add Straight Line"
       id="addbuttons"
       style="border: 1px solid #ff9100"
@@ -11,7 +11,7 @@
     </button>
     <button
       (click)="addNewLine('step')"
-      class="w-3rem h-3rem border-2 border-round shadow-2 cursor-pointer flex align-items-center justify-content-center background"
+      class="w-3rem h-3rem border-round-xl shadow-2 cursor-pointer flex align-items-center justify-content-center background"
       title="Add Step Line"
       id="addbuttons"
       style="border: 1px solid #ff9100"
@@ -20,7 +20,7 @@
     </button>
     <button
       (click)="addNewLine('curve')"
-      class="w-3rem h-3rem border-2 border-round shadow-2 cursor-pointer flex align-items-center justify-content-center background"
+      class="w-3rem h-3rem border-round-xl shadow-2 cursor-pointer flex align-items-center justify-content-center background"
       title="Add Curve Line"
       id="addbuttons"
       style="border: 1px solid #ff9100"
@@ -31,7 +31,7 @@
 
   <div
     *ngIf="activeId"
-    class="fixed top-0 left-50 m-3 py-2 px-3 border-2 border-round-pill shadow-6 z-4 flex align-items-center gap-3 maincolorborder background"
+    class="fixed top-0 left-50 m-3 px-3 border-round-xl shadow-6 z-4 flex align-items-center gap-3 background"
     style="transform: translateX(-50%); height: 50px"
   >
     <div class="relative flex align-items-center h-full">
@@ -50,59 +50,55 @@
       />
     </div>
     <div class="relative h-full flex align-items-center" id="maincolor">
-      <i
+      <img
         title="Line Width"
-        class="pi pi-bars cursor-pointer text-700"
+        class="cursor-pointer"
+        [src]="
+          menuStates.width ? '/assets/linewidth2.svg' : '/assets/linewidth.svg'
+        "
         (click)="menuStates.width = !menuStates.width"
-      ></i>
+      />
 
       <div
         *ngIf="menuStates.width"
         title="Line Width"
-        class="absolute top-100 left-50 mt-3 border-round shadow-4 p-3 w-12rem background"
+        class="absolute top-100 left-50 mt-3 border-round shadow-4 p-3  background border-round-xl"
         id="maincolor"
         style="transform: translateX(-50%); z-index: 10"
       >
-        <div class="flex flex-column gap-3">
-          <div class="flex align-items-center justify-content-between">
-            <span class="text-xs font-semibold">Line Width</span>
-            <input
-              type="number"
-              title="Line Width"
-              [value]="activeLine?.width || 2"
-              (input)="onWidthChange($any($event.target).value)"
-              id="maincolor"
-              class="w-3rem p-1 text-center border-1 border-round text-sm maincolorborder background"
-            />
-          </div>
+        <div class="flex align-items-center justify-content-center gap-1">
+          <button
+            class="p-button-text p-1 border-1 border-round-xs surface-100 hover:surface-200 cursor-pointer custom-width-btn hover:maincolorborder"
+
+            (click)="adjustWidth(-1)"
+            [disabled]="(activeLine?.width || 2) <= 1 || activeLine?.locked"
+          >
+            <i class="pi pi-minus text-xs"></i>
+          </button>
 
           <input
-            type="range"
-            min="1"
-            step="1"
-            [value]="activeLine?.width || 10"
+            type="number"
+            title="Line Width"
+            [value]="activeLine?.width || 2"
             (input)="onWidthChange($any($event.target).value)"
-            id="maincolor"
-            class="w-full cursor-pointer"
+            class="w-3rem p-1 text-center border-1 border-round-xs text-sm background no-spinners"
+            [disabled]="activeLine?.locked"
           />
 
-          <div class="flex justify-content-between gap-1 mt-1">
-            <button
-              *ngFor="let val of [10, 15, 20]"
-              (click)="updateActiveLine(null, val)"
-              class="p-1 text-xs border-1 border-200 border-round cursor-pointer flex-1 maincolorborder hoverbackgroundclass"
-              id="maincolor"
-            >
-              {{ val }}
-            </button>
-          </div>
+          <button
+            class="p-button-text p-1 border-1 border-round surface-100 hover:surface-200 cursor-pointer custom-width-btn"
+            (click)="adjustWidth(1)"
+            [disabled]="activeLine?.locked"
+          >
+            <i class="pi pi-plus text-xs"></i>
+          </button>
         </div>
       </div>
     </div>
 
     <div class="flex align-items-center justify-content-center h-full">
       <div
-        class="relative w-2rem h-2rem border-2 border-circle shadow-2 cursor-pointer border-round transition-all flex align-items-center justify-content-center"
+        class="relative w-1rem h-1rem border-2 border-circle shadow-2 cursor-pointer transition-all flex align-items-center justify-content-center"
         [style.backgroundColor]="activeLine?.color || '#000000'"
         [style.borderColor]="'#ff9100'"
         (click)="colorInput.click()"
@@ -118,10 +114,7 @@
       </div>
     </div>
 
-    <div
-      class="flex align-items-center justify-center-safe gap-3 h-full"
-      id="maincolor"
-    >
+    <div class="flex align-items-center justify-center-safe gap-3 h-full">
       <i
         title="Lock Line"
         class="pi cursor-pointer text-lg"
@@ -131,7 +124,7 @@
 
       <i
         title="Delete Line"
-        class="pi pi-trash text-red-500 text-lg cursor-pointer hover:text-red-700"
+        class="pi pi-trash text-lg cursor-pointer"
         (click)="deleteActiveLine()"
       ></i>
     </div>
@@ -179,7 +172,7 @@
         <div class="flex align-items-center gap-4 w-auto">
           <div class="flex align-items-center gap-2">
             <i
-              class="pi pi-minus cursor-pointer text-xs text-500 border-none px-4 py-2 font-bold shadow-2 flex align-items-center gap-2 background hoverbackgroundclass"
+              class="pi pi-minus cursor-pointer text-xs text-500 border-none px-4 py-2 font-bold shadow-2 flex align-items-center gap-2 background hoverbackgroundclass border-round-xl"
               (click)="adjustZoom(-0.1)"
             ></i>
 
@@ -194,13 +187,13 @@
             />
 
             <i
-              class="pi pi-plus px-4 py-2 font-bold cursor-pointer shadow-2 flex align-items-center gap-2 background hoverbackgroundclass"
+              class="pi pi-plus px-4 py-2 font-bold cursor-pointer shadow-2 flex align-items-center gap-2 background hoverbackgroundclass border-round-xl"
               (click)="adjustZoom(0.1)"
             ></i>
 
             <button
               (click)="resetZoom()"
-              class="px-4 py-2 border-none font-bold cursor-pointer shadow-2 flex align-items-center gap-2 background hoverbackgroundclass"
+              class="px-4 py-2 border-none font-bold cursor-pointer shadow-2 flex align-items-center gap-2 background hoverbackgroundclass border-round-xl"
               id="maincolor"
             >
               Reset Zoom
@@ -214,7 +207,7 @@
               type="number"
               [value]="(zoomLevel * 100).toFixed(0)"
               (change)="onZoomInput($any($event.target).value)"
-              class="border-none outline-none w-3rem text-center font-bold text-900"
+              class="border-none outline-none w-3rem text-center font-bold text-900 border-round-xl"
             />
             <span class="text-900 font-medium">%</span>
           </div>
@@ -223,7 +216,7 @@
         <button
           (click)="addToProject()"
           id="maincolor"
-          class="border-none px-4 py-2 font-bold cursor-pointer shadow-2 flex align-items-center gap-2 background hoverbackgroundclass"
+          class="border-none px-4 py-2 font-bold cursor-pointer shadow-2 flex align-items-center gap-2 background hoverbackgroundclass border-round-xl"
         >
           <i class="pi pi-plus-circle"></i> Add to Project
         </button>
