@@ -1,4 +1,4 @@
-/* Ensure the component fills the entire viewport */
+Ensure the component fills the entire viewport
 /* Reset body to ensure no hidden scrollbars interfere with the fixed UI */
 html,
 body {
@@ -35,14 +35,9 @@ canvas {
   transform: translateX(-50%);
 }
 
-/* Smooth transition for the color palette sliding movement */
-.transition-transform {
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* Animations for the 'Add' dropdown menu */
-.animate-in {
-  animation: slideDown 0.2s ease-out;
+/* Center the Main Footer */
+.translate-x-50 {
+  transform: translateX(50%);
 }
 
 @keyframes slideDown {
@@ -80,15 +75,22 @@ i {
   transition: color 0.2s;
 }
 
-/* Hover effects for the color circles */
-.w-1rem.h-1rem:hover {
-  transform: scale(1.2);
-  filter: brightness(0.9);
+#maincolor{
+  color: #ff9100;
 }
 
-/* Ensure the navbar pill stays above the canvas but below PrimeNG dialogs if any */
-.shadow-6 {
-  box-shadow:
-    0 10px 15px -3px rgba(0, 0, 0, 0.1),
-    0 4px 6px -2px rgba(0, 0, 0, 0.05);
+.maincolorborder{
+  border-color: #ff9100;
+}
+
+.background{
+  background: #f6f9fb;
+}
+
+#addbuttons:hover {
+  background: #fff4e5;
+}
+
+input[type='range'] {
+  accent-color: #ff9100; /* Sets the color of the thumb and the track portion before it */
 }

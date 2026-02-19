@@ -2,22 +2,28 @@
   <div class="fixed top-0 left-0 m-2 z-5 flex gap-2">
     <button
       (click)="addNewLine('straight')"
-      class="w-3rem h-3rem bg-white border-2 border-round shadow-2 cursor-pointer hover:bg-gray-100 flex align-items-center justify-content-center"
+      class="w-3rem h-3rem border-2 border-round shadow-2 cursor-pointer flex align-items-center justify-content-center background"
       title="Add Straight Line"
+      id="addbuttons"
+      style="border: 1px solid #ff9100;"
     >
-      <img src="/assets/line.svg" class="" />
+      <img src="/assets/line.svg" />
     </button>
     <button
       (click)="addNewLine('step')"
-      class="w-3rem h-3rem bg-white border-2 border-round shadow-2 cursor-pointer hover:bg-gray-100 flex align-items-center justify-content-center"
+      class="w-3rem h-3rem border-2 border-round shadow-2 cursor-pointer flex align-items-center justify-content-center background"
       title="Add Step Line"
+      id="addbuttons"
+      style="border: 1px solid #ff9100;"
     >
       <img src="/assets/step.svg" class="" />
     </button>
     <button
       (click)="addNewLine('curve')"
-      class="w-3rem h-3rem bg-white border-2 border-round shadow-2 cursor-pointer hover:bg-gray-100 flex align-items-center justify-content-center"
+      class="w-3rem h-3rem border-2 border-round shadow-2 cursor-pointer flex align-items-center justify-content-center background"
       title="Add Curve Line"
+      id="addbuttons"
+      style="border: 1px solid #ff9100;"
     >
       <img src="/assets/curve.svg" class="" />
     </button>
@@ -25,7 +31,7 @@
 
   <div
     *ngIf="activeId"
-    class="fixed top-0 left-50 m-3 py-2 px-3 bg-white border-2 border-round-pill shadow-6 z-4 flex align-items-center gap-3"
+    class="fixed top-0 left-50 m-3 py-2 px-3 bg-white border-2 border-round-pill shadow-6 z-4 flex align-items-center gap-3 maincolorborder"
     style="transform: translateX(-50%); height: 50px"
   >
     <div class="relative flex align-items-center h-full">
@@ -43,30 +49,30 @@
         "
       />
     </div>
-    <div
-      class="relative h-full flex align-items-center"
-    >
+    <div class="relative h-full flex align-items-center">
       <i
         title="Line Width"
-        class="pi pi-bars cursor-pointer text-700 hover:text-blue-500"
+        class="pi pi-bars cursor-pointer text-700"
         (click)="menuStates.width = !menuStates.width"
       ></i>
 
       <div
         *ngIf="menuStates.width"
         title="Line Width"
-        class="absolute top-100 left-50 mt-3 bg-white border-round shadow-4 p-3 w-12rem"
+        class="absolute top-100 left-50 mt-3 border-round shadow-4 p-3 w-12rem background"
+        id="maincolor"
         style="transform: translateX(-50%); z-index: 10"
       >
         <div class="flex flex-column gap-3">
           <div class="flex align-items-center justify-content-between">
-            <span class="text-xs font-semibold text-600">Line Width</span>
+            <span class="text-xs font-semibold">Line Width</span>
             <input
               type="number"
               title="Line Width"
               [value]="activeLine?.width || 2"
               (input)="onWidthChange($any($event.target).value)"
-              class="w-3rem p-1 text-center border-1 border-300 border-round text-sm"
+              id="maincolor"
+              class="w-3rem p-1 text-center border-1 border-round text-sm maincolorborder"
             />
           </div>
 
@@ -76,14 +82,16 @@
             step="1"
             [value]="activeLine?.width || 10"
             (input)="onWidthChange($any($event.target).value)"
-            class="w-full cursor-pointer accent-blue-500"
+            id="maincolor"
+            class="w-full cursor-pointer"
           />
 
           <div class="flex justify-content-between gap-1 mt-1">
             <button
               *ngFor="let val of [10, 15, 20]"
               (click)="updateActiveLine(null, val)"
-              class="p-1 text-xs border-1 border-200 bg-gray-50 border-round hover:bg-blue-50 cursor-pointer flex-1"
+              class="p-1 text-xs border-1 border-200 bg-gray-50 border-round hover:bg-blue-50 cursor-pointer flex-1 maincolorborder"
+              id="maincolor"
             >
               {{ val }}
             </button>
@@ -93,8 +101,9 @@
     </div>
 
     <div class="flex align-items-center justify-content-center h-full">
+
       <div
-        class="relative w-2rem h-2rem border-2 border-circle shadow-2 cursor-pointer border-round transition-all  flex align-items-center justify-content-center"
+        class="relative w-2rem h-2rem border-2 border-circle shadow-2 cursor-pointer border-round transition-all flex align-items-center justify-content-center"
         [style.backgroundColor]="activeLine?.color || '#000000'"
         [style.borderColor]="'#ddd'"
         (click)="colorInput.click()"
@@ -110,9 +119,7 @@
       </div>
     </div>
 
-    <div
-      class="flex align-items-center justify-center-safe gap-3 h-full"
-    >
+    <div class="flex align-items-center justify-center-safe gap-3 h-full">
       <i
         title="Lock Line"
         class="pi cursor-pointer text-lg transition-colors"
@@ -153,7 +160,8 @@
   >
     <button
       (click)="showFooter = !showFooter"
-      class="m-4 p-button border-circle w-3rem h-3rem bg-white border-2 shadow-4 cursor-pointer flex align-items-center justify-content-center pointer-events-auto hover:bg-gray-100"
+      class="m-4 p-button border-circle w-3rem h-3rem bg-white border-2 shadow-4 cursor-pointer flex align-items-center justify-content-center pointer-events-auto maincolorborder"
+      id="maincolor"
     >
       <i
         class="pi text-900 font-bold"
@@ -162,7 +170,8 @@
     </button>
 
     <div
-      class="w-full bg-white border-top-2 border-900 transition-all transition-duration-300 pointer-events-auto shadow-8"
+      class="w-full border-top-2 border-900 transition-all transition-duration-300 pointer-events-auto shadow-8 background"
+      id="maincolor"
       [style.height]="showFooter ? '80px' : '0'"
       [style.opacity]="showFooter ? '1' : '0'"
     >
@@ -170,7 +179,7 @@
         <div class="flex align-items-center gap-4 w-auto">
           <div class="flex align-items-center gap-2">
             <i
-              class="pi pi-minus cursor-pointer text-xs text-500 hover:text-900 bg-blue-600 text-black border-none border-round px-4 py-2 font-bold hover:bg-blue-700 shadow-2 flex align-items-center gap-2"
+              class="pi pi-minus cursor-pointer text-xs text-500 bg-white border-none px-4 py-2 font-bold shadow-2 flex align-items-center gap-2"
               (click)="adjustZoom(-0.1)"
             ></i>
 
@@ -185,14 +194,14 @@
             />
 
             <i
-              class="pi pi-plus bg-blue-600 text-black border-none border-round px-4 py-2 font-bold cursor-pointer hover:bg-blue-700 shadow-2 flex align-items-center gap-2"
+              class="pi pi-plus px-4 py-2 bg-white font-bold cursor-pointer shadow-2 flex align-items-center gap-2"
               (click)="adjustZoom(0.1)"
             ></i>
 
             <button
               (click)="resetZoom()"
-              class="bg-blue-600 text-black border-none border-round px-4 py-2 font-bold cursor-pointer hover:bg-blue-700 shadow-2 flex align-items-center gap-2"
-            >
+              class=" px-4 py-2 border-none bg-white font-bold cursor-pointer shadow-2 flex align-items-center gap-2"
+              id="maincolor">
               Reset Zoom
             </button>
           </div>
@@ -212,7 +221,8 @@
 
         <button
           (click)="addToProject()"
-          class="bg-blue-600 text-black border-none border-round px-4 py-2 font-bold cursor-pointer hover:bg-blue-700 shadow-2 flex align-items-center gap-2"
+          id="maincolor"
+          class="bg-white  border-none px-4 py-2 font-bold cursor-pointer shadow-2 flex align-items-center gap-2"
         >
           <i class="pi pi-plus-circle"></i> Add to Project
         </button>
