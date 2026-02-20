@@ -80,8 +80,6 @@
             "tsConfig": "tsconfig.spec.json",
             "assets": ["src/favicon.ico", "src/assets"],
             "styles": [
-              "primeng/resources/primeng.min.css",
-              "primeicons/primeicons.css",
               "src/styles.css"
             ],
             "scripts": []
