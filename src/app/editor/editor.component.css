@@ -25,20 +25,10 @@ body {
 canvas {
   display: block;
   background-color: #ffffff;
-  /* Creates the subtle dot-grid pattern */
   background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
   background-size: 24px 24px;
 }
 
-/* Center the Main Navbar */
-.translate-x-neg-50 {
-  transform: translateX(-50%);
-}
-
-/* Center the Main Footer */
-.translate-x-50 {
-  transform: translateX(50%);
-}
 
 @keyframes slideDown {
   from {
@@ -69,39 +59,6 @@ canvas {
   background: #94a3b8;
 }
 
-/* Icon utility */
-i {
-  user-select: none; /* Prevents text selection blue-tint when clicking rapidly */
-  transition: color 0.2s;
-}
-
-#maincolor {
-  color: #ff9100;
-}
-
-.maincolor {
-  color: #ff9100;
-}
-
-.maincolorborder {
-  border-color: #ff9100;
-}
-
-.maincolorbackground {
-  background-color: #ff9100;
-}
-
-.background {
-  background: #f6f9fb;
-}
-
-#addbuttons:hover {
-  background: #fff4e5;
-}
-
-.hoverbackgroundclass:hover {
-  background: #fff4e5;
-}
 
 input[type="range"] {
   accent-color: #ff9100; /* Sets the color of the thumb and the track portion before it */
@@ -124,3 +81,8 @@ input:focus {
   -moz-appearance: textfield;
 }
 
+
+.delete-button svg:hover{
+  fill: #ff9100;
+  color: #ff9100;
+}

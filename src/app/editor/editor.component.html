@@ -1,29 +1,25 @@
-<div class="relative w-screen h-screen overflow-hidden bg-white">
-  <div class="fixed top-0 left-0 m-2 z-5 flex gap-2">
+<div class="relative w-screen h-screen">
+  <div
+    class="fixed top-0 left-0 m-2 z-5 flex justify-center items-center space-x-2"
+  >
     <button
       (click)="addNewLine('straight')"
-      class="w-3rem h-3rem border-round-xl shadow-2 cursor-pointer flex align-items-center justify-content-center background"
+      class="w-9 h-9 shadow-2 rounded cursor-pointer flex items-center justify-center bg-white border shadow-md shadow-[#f6f9fb] hover:border-[#ff9100] hover:scale-[1.1]"
       title="Add Straight Line"
-      id="addbuttons"
-      style="border: 1px solid #ff9100"
     >
-      <img src="/assets/line.svg" />
+      <img src="/assets/line.svg" class="" />
     </button>
     <button
       (click)="addNewLine('step')"
-      class="w-3rem h-3rem border-round-xl shadow-2 cursor-pointer flex align-items-center justify-content-center background"
+      class="w-9 h-9 rounded shadow-2 cursor-pointer flex items-center justify-center bg-white border shadow-md shadow-[#f6f9fb] hover:border-[#ff9100] hover:scale-[1.1]"
       title="Add Step Line"
-      id="addbuttons"
-      style="border: 1px solid #ff9100"
     >
       <img src="/assets/step.svg" class="" />
     </button>
     <button
       (click)="addNewLine('curve')"
-      class="w-3rem h-3rem border-round-xl shadow-2 cursor-pointer flex align-items-center justify-content-center background"
+      class="w-9 h-9 rounded shadow-2 cursor-pointer flex items-center justify-center bg-white border shadow-md shadow-[#f6f9fb] hover:border-[#ff9100] hover:scale-[1.1]"
       title="Add Curve Line"
-      id="addbuttons"
-      style="border: 1px solid #ff9100"
     >
       <img src="/assets/curve.svg" class="" />
     </button>
@@ -31,28 +27,24 @@
 
   <div
     *ngIf="activeId"
-    class="fixed top-0 left-50 m-3 px-3 border-round-xl shadow-6 z-4 flex align-items-center gap-3 background"
-    style="transform: translateX(-50%); height: 50px"
+    class="fixed top-0 left-[650px] m-3 px-2 rounded-lg z-50 flex items-center justify-center space-x-2 bg-white border shadow shadow-[#f6f9fb] h-10"
   >
-    <div class="relative flex align-items-center h-full">
-      <img
-        (click)="toggleLineStyle()"
-        [title]="
-          activeLine?.type === 'curve' ? 'Switch to Pointy' : 'Switch to Smooth'
-        "
-        class="cursor-pointer"
-        style="width: 1.75rem"
-        [src]="
-          activeLine?.type === 'curve'
-            ? '/assets/roundy.svg'
-            : '/assets/pointy.svg'
-        "
-      />
-    </div>
-    <div class="relative h-full flex align-items-center" id="maincolor">
+    <img
+      (click)="toggleLineStyle()"
+      [title]="
+        activeLine?.type === 'curve' ? 'Switch to Pointy' : 'Switch to Smooth'
+      "
+      class="cursor-pointer h-8 hover:bg-[#f6f9fb] hover:border rounded-md"
+      [src]="
+        activeLine?.type === 'curve'
+          ? '/assets/roundy.svg'
+          : '/assets/pointy.svg'
+      "
+    />
+    <div class="relative flex items-center justify-center">
       <img
         title="Line Width"
-        class="cursor-pointer"
+        class="cursor-pointer h-8 p-1 hover:bg-[#f6f9fb] hover:border rounded-md"
         [src]="
           menuStates.width ? '/assets/linewidth2.svg' : '/assets/linewidth.svg'
         "
@@ -62,18 +54,33 @@
       <div
         *ngIf="menuStates.width"
         title="Line Width"
-        class="absolute top-100 left-50 mt-3 border-round shadow-4 p-3  background border-round-xl"
-        id="maincolor"
-        style="transform: translateX(-50%); z-index: 10"
+        class="absolute top-8 mt-3 rounded px-4 py-3 w-32 h-12 bg-white border shadow shadow-[#f6f9fb]"
       >
-        <div class="flex align-items-center justify-content-center gap-1">
-          <button
-            class="p-button-text p-1 border-1 border-round-xs surface-100 hover:surface-200 cursor-pointer custom-width-btn hover:maincolorborder"
 
+        <div>
+          <button></button>
+          <button></button>
+          <button></button>
+        </div>
+
+        <div class="flex items-center justify-center gap-1">
+
+
+
+          <button
+            class="w-8 h-8 p-1 rounded-sm cursor-pointer border shadow shadow-[#f6f9fb]"
             (click)="adjustWidth(-1)"
             [disabled]="(activeLine?.width || 2) <= 1 || activeLine?.locked"
           >
-            <i class="pi pi-minus text-xs"></i>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              height="24px"
+              viewBox="0 -960 960 960"
+              width="24px"
+              fill="#000000"
+            >
+              <path d="M200-440v-80h560v80H200Z" />
+            </svg>
           </button>
 
           <input
@@ -81,100 +88,112 @@
             title="Line Width"
             [value]="activeLine?.width || 2"
             (input)="onWidthChange($any($event.target).value)"
-            class="w-3rem p-1 text-center border-1 border-round-xs text-sm background no-spinners"
+            class="w-9 h-8 p-1 text-center text-sm no-spinners border shadow shadow-[#f6f9fb]"
             [disabled]="activeLine?.locked"
           />
 
           <button
-            class="p-button-text p-1 border-1 border-round surface-100 hover:surface-200 cursor-pointer custom-width-btn"
+            class="w-8 h-8 p-1 rounded-sm cursor-pointer border shadow shadow-[#f6f9fb]"
             (click)="adjustWidth(1)"
             [disabled]="activeLine?.locked"
           >
-            <i class="pi pi-plus text-xs"></i>
+            <svg
+              xmlns="http://www.w3.org/2000/svg w-7 h-7"
+              height="24px"
+              viewBox="0 -960 960 960"
+              width="24px"
+              fill="#000000"
+            >
+              <path
+                d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z"
+              />
+            </svg>
           </button>
         </div>
       </div>
     </div>
 
-    <div class="flex align-items-center justify-content-center h-full">
+    <div
+      class="flex items-center justify-center h-8 w-8 rounded-md hover:bg-[#f6f9fb] hover:border"
+    >
       <div
-        class="relative w-1rem h-1rem border-2 border-circle shadow-2 cursor-pointer transition-all flex align-items-center justify-content-center"
+        class="relative w-6 border-2 cursor-pointer transition-all flex items-center justify-center h-6 rounded-full"
         [style.backgroundColor]="activeLine?.color || '#000000'"
-        [style.borderColor]="'#ff9100'"
         (click)="colorInput.click()"
         title="Change Color"
       >
         <input
           #colorInput
           type="color"
-          class="absolute top-100 opacity-0 w-full h-full cursor-pointer"
+          class="absolute top-3.5 opacity-0 w-full h-full cursor-pointer"
           [value]="activeLine?.color || '#000000'"
           (input)="updateActiveLine($any($event.target).value, null)"
         />
       </div>
     </div>
 
-    <div class="flex align-items-center justify-center-safe gap-3 h-full">
-      <i
-        title="Lock Line"
-        class="pi cursor-pointer text-lg"
-        [ngClass]="activeLine?.locked ? 'pi-lock ' : 'pi-lock-open'"
-        (click)="updateActiveLine(null, null, true)"
-      ></i>
+    <img
+      title="Lock Line"
+      class="cursor-pointer p-1 h-8 w-8 rounded-md hover:bg-[#f6f9fb] hover:border"
+      [src]="activeLine?.locked ? '/assets/lock.svg ' : '/assets/unlock.svg'"
+      (click)="updateActiveLine(null, null, true)"
+    />
 
-      <i
-        title="Delete Line"
-        class="pi pi-trash text-lg cursor-pointer"
-        (click)="deleteActiveLine()"
-      ></i>
+    <div
+      title="Delete Line"
+      class="cursor-pointer p-1 h-8 w-8 rounded-md hover:bg-[#f6f9fb] hover:border"
+      (click)="deleteActiveLine()"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        height="24px"
+        viewBox="0 -960 960 960"
+        width="24px"
+        class="hover:fill-[#ff9100]"
+      >
+        <path
+          d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z"
+        />
+      </svg>
     </div>
   </div>
 
-  <div
-    class="w-full h-full"
-    style="
-      background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-      background-size: 24px 24px;
-    "
+  <canvas
+    #editorCanvas
+    (mousedown)="onMouseDown($event)"
+    (mousemove)="onMouseMove($event)"
+    (mouseup)="onMouseUp()"
+    (dblclick)="onDoubleClick($event)"
+    class="block w-full h-full"
   >
-    <canvas
-      #editorCanvas
-      (mousedown)="onMouseDown($event)"
-      (mousemove)="onMouseMove($event)"
-      (mouseup)="onMouseUp()"
-      (dblclick)="onDoubleClick($event)"
-      class="block w-full h-full"
-    >
-    </canvas>
-  </div>
+  </canvas>
 
   <div
-    class="fixed bottom-0 left-0 w-full z-5 flex flex-column align-items-end pointer-events-none"
+    class="fixed bottom-0 w-full z-50 flex flex-column items-center justify-center pointer-events-none"
   >
     <button
       (click)="showFooter = !showFooter"
-      class="m-4 p-button border-circle w-3rem h-3rem border-2 shadow-4 cursor-pointer flex align-items-center justify-content-center pointer-events-auto maincolorborder hoverbackgroundclass"
-      id="maincolor"
+      class="m-4 rounded absolute bottom-0 right-0 w-7 h-7 border-2 border-black cursor-pointer flex items-center justify-center pointer-events-auto"
     >
-      <i
+      <img
         class="pi text-900 font-bold"
-        [ngClass]="showFooter ? 'pi-chevron-down' : 'pi-angle-up'"
-      ></i>
+        [src]="showFooter ? '/assets/down.svg' : '/assets/up.svg'"
+      />
     </button>
 
     <div
-      class="w-full border-top-2 border-900 transition-all transition-duration-300 pointer-events-auto shadow-8 background"
-      id="maincolor"
+      class="w-2/3 px-10 my-2 mx-20 transition-all transition-duration-300 pointer-events-auto bg-[#f6f9fb] rounded-xl border"
       [style.height]="showFooter ? '80px' : '0'"
       [style.opacity]="showFooter ? '1' : '0'"
     >
-      <div class="flex align-items-center justify-content-between h-full px-5">
-        <div class="flex align-items-center gap-4 w-auto">
-          <div class="flex align-items-center gap-2">
-            <i
-              class="pi pi-minus cursor-pointer text-xs text-500 border-none px-4 py-2 font-bold shadow-2 flex align-items-center gap-2 background hoverbackgroundclass border-round-xl"
+      <div class="flex items-center justify-between h-full">
+        <div class="flex items-center gap-4">
+          <div class="flex items-center gap-2">
+            <img
+              src="/assets/minus.svg"
+              class="w-7 h-7"
               (click)="adjustZoom(-0.1)"
-            ></i>
+            />
 
             <input
               type="range"
@@ -186,28 +205,28 @@
               class="cursor-pointer zoom-slider background"
             />
 
-            <i
-              class="pi pi-plus px-4 py-2 font-bold cursor-pointer shadow-2 flex align-items-center gap-2 background hoverbackgroundclass border-round-xl"
+            <img
+              src="/assets/plus.svg"
+              class="w-7 h-7"
               (click)="adjustZoom(0.1)"
-            ></i>
+            />
 
             <button
               (click)="resetZoom()"
-              class="px-4 py-2 border-none font-bold cursor-pointer shadow-2 flex align-items-center gap-2 background hoverbackgroundclass border-round-xl"
-              id="maincolor"
+              class="px-4 py-2 font-bold cursor-pointer flex items-center gap-2"
             >
               Reset Zoom
             </button>
           </div>
 
           <div
-            class="flex align-items-center gap-1 border-1 border-300 border-round px-2 py-1 bg-white shadow-1"
+            class="flex items-center justify-center gap-1 px-2 py-1 bg-white"
           >
             <input
               type="number"
               [value]="(zoomLevel * 100).toFixed(0)"
               (change)="onZoomInput($any($event.target).value)"
-              class="border-none outline-none w-3rem text-center font-bold text-900 border-round-xl no-spinners"
+              class="border-none outline-none w-9 h-7 text-center font-bold text-900 no-spinners"
             />
             <span class="text-900 font-medium">%</span>
           </div>
@@ -215,10 +234,20 @@
 
         <button
           (click)="addToProject()"
-          id="maincolor"
-          class="border-none px-4 py-2 font-bold cursor-pointer shadow-2 flex align-items-center gap-2 background hoverbackgroundclass border-round-xl"
+          class="border-none px-4 py-2 font-bold cursor-pointer flex items-center justify-center gap-2 hover:text-[#ff9100]"
         >
-          <i class="pi pi-plus-circle"></i> Add to Project
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            height="24px"
+            viewBox="0 -960 960 960"
+            width="24px"
+            fill="#000000"
+          >
+            <path
+              d="M440-320h80v-120h120v-80H520v-120h-80v120H320v80h120v120Zm40 240q-16 0-30.5-5.5T424-103L105-423q-11-12-18-26.5T80-480q0-16 7-30.5t18-25.5l319-320q12-12 26-18t30-6q16 0 31 6t26 18l318 320q11 12 18 26t7 30q0 16-6.5 30.5T855-423L537-103q-11 11-26 17t-31 6Zm0-80 319-320-319-320-319 320 319 320Zm0-320Z"
+            />
+          </svg>
+          Add to Project
         </button>
       </div>
     </div>

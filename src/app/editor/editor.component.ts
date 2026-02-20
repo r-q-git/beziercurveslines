@@ -31,6 +31,13 @@ export class EditorComponent implements OnInit, AfterViewInit {
   @ViewChild('editorCanvas') canvasRef!: ElementRef<HTMLCanvasElement>;
   private ctx!: CanvasRenderingContext2D;
 
+  iconSvg = `
+  <g>
+    <path d="M200-200h560v-80H200v80Z"/>
+    <path d="M200-360h560v-80H200v80Z"/>
+  </g>
+`;
+
   // --- Drawing State ---
   lines: Line[] = [];
   activeId: number | null = null;
@@ -86,44 +93,44 @@ export class EditorComponent implements OnInit, AfterViewInit {
 
   // --- Core Rendering ---
   render() {
-  if (!this.ctx) return;
-  const canvas = this.canvasRef.nativeElement;
-  this.ctx.clearRect(0, 0, canvas.width, canvas.height);
+    if (!this.ctx) return;
+    const canvas = this.canvasRef.nativeElement;
+    this.ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  this.ctx.save();
-  this.ctx.translate(canvas.width / 2, canvas.height / 2);
-  this.ctx.scale(this.zoomLevel, this.zoomLevel);
-  this.ctx.translate(-canvas.width / 2, -canvas.height / 2);
+    this.ctx.save();
+    this.ctx.translate(canvas.width / 2, canvas.height / 2);
+    this.ctx.scale(this.zoomLevel, this.zoomLevel);
+    this.ctx.translate(-canvas.width / 2, -canvas.height / 2);
 
-  this.lines.forEach((line) => {
-    const pts = [line.start, ...line.elbows, line.end];
-    const path = new Path2D(this.getPath(pts, line.type));
-    
-    this.ctx.strokeStyle = line.color;
-    this.ctx.lineWidth = line.width;
-    this.ctx.lineCap = 'round';
-    this.ctx.lineJoin = 'round';
-    this.ctx.stroke(path);
+    this.lines.forEach((line) => {
+      const pts = [line.start, ...line.elbows, line.end];
+      const path = new Path2D(this.getPath(pts, line.type));
 
-    // Draw UI (Buttons/Rotate/Move) only for the active line
-    if (line.id === this.activeId) {
-      this.drawActiveUI(line);
+      this.ctx.strokeStyle = line.color;
+      this.ctx.lineWidth = line.width;
+      this.ctx.lineCap = 'round';
+      this.ctx.lineJoin = 'round';
+      this.ctx.stroke(path);
+
+      // Draw UI (Buttons/Rotate/Move) only for the active line
+      if (line.id === this.activeId) {
+        this.drawActiveUI(line);
+      }
+
+      this.ctx.globalAlpha = 1.0; // Reset alpha for next elements
+    });
+
+    // Draw the Pointer Icon (Snapping)
+    // Logic: Show it only if we have a point AND the line being hovered is NOT locked
+    if (this.previewElbow && !this.dragging) {
+      const hoveredLine = this.lines.find((l) => l.id === this.hoveredLineId);
+      if (hoveredLine && !hoveredLine.locked) {
+        this.drawPointerIcon(this.previewElbow.x, this.previewElbow.y);
+      }
     }
-    
-    this.ctx.globalAlpha = 1.0; // Reset alpha for next elements
-  });
 
-  // Draw the Pointer Icon (Snapping)
-  // Logic: Show it only if we have a point AND the line being hovered is NOT locked
-  if (this.previewElbow && !this.dragging) {
-    const hoveredLine = this.lines.find(l => l.id === this.hoveredLineId);
-    if (hoveredLine && !hoveredLine.locked) {
-      this.drawPointerIcon(this.previewElbow.x, this.previewElbow.y);
-    }
+    this.ctx.restore();
   }
-
-  this.ctx.restore();
-}
 
   private drawPointerIcon(x: number, y: number) {
     this.ctx.save();
@@ -648,7 +655,7 @@ export class EditorComponent implements OnInit, AfterViewInit {
     let newLine: Line = {
       id,
       color: '#3b82f6',
-      width: 10,
+      width: 2,
       locked: false,
       type,
       start: { x: centerX - 100, y: centerY },
@@ -702,15 +709,13 @@ export class EditorComponent implements OnInit, AfterViewInit {
   }
 
   adjustWidth(delta: number) {
-  if (!this.activeLine || this.activeLine.locked) return;
-  
-  const currentWidth = this.activeLine.width || 2;
-  const newWidth = Math.max(1, currentWidth + delta); // Prevent width < 1
-  
-  this.onWidthChange(newWidth);
-}
+    if (!this.activeLine || this.activeLine.locked) return;
 
+    const currentWidth = this.activeLine.width || 2;
+    const newWidth = Math.max(1, currentWidth + delta); // Prevent width < 1
 
+    this.onWidthChange(newWidth);
+  }
 
   /**
    * handle Zoom:
