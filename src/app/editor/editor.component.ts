@@ -20,6 +20,7 @@ interface Line {
   end: Point;
   elbows: Point[];
   type: 'straight' | 'step' | 'curve';
+  strokeStyle: 'solid' | 'dashed' | 'dotted';
 }
 
 @Component({
@@ -99,22 +100,33 @@ export class EditorComponent implements OnInit, AfterViewInit {
       const pts = [line.start, ...line.elbows, line.end];
       const path = new Path2D(this.getPath(pts, line.type));
 
+      this.ctx.save();
+
       this.ctx.strokeStyle = line.color;
       this.ctx.lineWidth = line.width;
-      this.ctx.lineCap = 'round';
-      this.ctx.lineJoin = 'round';
-      this.ctx.stroke(path);
 
-      // Draw UI (Buttons/Rotate/Move) only for the active line
+      // MANDATORY: This must be 'round' for the dotted trick to work
+      this.ctx.lineCap = 'round';
+      // this.ctx.lineJoin = 'round';
+
+      // --- Stroke Style Selection ---
+      if (line.strokeStyle === 'dashed') {
+        this.ctx.setLineDash([line.width * 3, line.width * 3]);
+      } else if (line.strokeStyle === 'dotted') {
+        this.ctx.setLineDash([0, line.width * 2.5]);
+      } else {
+        this.ctx.setLineDash([]); // Solid
+      }
+
+      this.ctx.stroke(path);
+      this.ctx.restore();
+
       if (line.id === this.activeId) {
         this.drawActiveUI(line);
       }
-
-      this.ctx.globalAlpha = 1.0; // Reset alpha for next elements
     });
 
     // Draw the Pointer Icon (Snapping)
-    // Logic: Show it only if we have a point AND the line being hovered is NOT locked
     if (this.previewElbow && !this.dragging) {
       const hoveredLine = this.lines.find((l) => l.id === this.hoveredLineId);
       if (hoveredLine && !hoveredLine.locked) {
@@ -672,6 +684,7 @@ export class EditorComponent implements OnInit, AfterViewInit {
       start: { x: centerX - 100, y: centerY },
       end: { x: centerX + 100, y: centerY },
       elbows: [],
+      strokeStyle: 'solid',
     };
     if (type === 'step') {
       newLine.start = { x: centerX - 150, y: centerY - 75 };
@@ -694,21 +707,32 @@ export class EditorComponent implements OnInit, AfterViewInit {
     c: string | null,
     w: number | null,
     lockToggle: boolean = false,
+    ss?: 'solid' | 'dashed' | 'dotted', // Optional parameter for stroke style
   ) {
     if (!this.activeLine) return;
 
-    // 1. Handle the Lock Toggle first
+    // 1. Handle the Lock Toggle first (Always allowed)
     if (lockToggle) {
       this.activeLine.locked = !this.activeLine.locked;
     }
 
     // 2. Only allow property changes if the line is NOT locked
-    // This prevents the color/width from changing while the line is 'frozen'
+    // This prevents color, width, or style changes while the line is 'frozen'
     if (!this.activeLine.locked) {
-      if (c) this.activeLine.color = c;
-      if (w) this.activeLine.width = w;
+      if (c !== null) {
+        this.activeLine.color = c;
+      }
+
+      if (w !== null) {
+        this.activeLine.width = w;
+      }
+
+      if (ss) {
+        this.activeLine.strokeStyle = ss;
+      }
     }
 
+    // 3. Redraw the canvas to reflect changes
     this.render();
   }
 

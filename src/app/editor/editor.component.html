@@ -65,6 +65,7 @@
               title="Stroke Style : Solid"
               [disabled]="activeLine?.locked"
               class="w-9 h-9 p-1 flex items-center justify-center shadow cursor-pointer hover:bg-[#f6f9fb] hover:border rounded-md"
+              (click)="updateActiveLine(null, null, false, 'solid')"
             >
               <!-- ls- stands for line style -->
 
@@ -91,6 +92,7 @@
               title="Stroke Style : Dashed"
               [disabled]="activeLine?.locked"
               class="w-9 h-9 p-1 flex items-center justify-center shadow cursor-pointer hover:bg-[#f6f9fb] hover:border rounded-md"
+              (click)="updateActiveLine(null, null, false, 'dashed')"
             >
               <svg
                 width="24"
@@ -117,6 +119,7 @@
               title="Stroke Style : Dotted"
               [disabled]="activeLine?.locked"
               class="w-9 h-9 p-1 flex items-center justify-end shadow cursor-pointer hover:bg-[#f6f9fb] hover:border rounded-md"
+              (click)="updateActiveLine(null, null, false, 'dashed')"
             >
               <svg
                 width="24"
