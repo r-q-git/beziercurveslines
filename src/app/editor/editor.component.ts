@@ -31,13 +31,6 @@ export class EditorComponent implements OnInit, AfterViewInit {
   @ViewChild('editorCanvas') canvasRef!: ElementRef<HTMLCanvasElement>;
   private ctx!: CanvasRenderingContext2D;
 
-  iconSvg = `
-  <g>
-    <path d="M200-200h560v-80H200v80Z"/>
-    <path d="M200-360h560v-80H200v80Z"/>
-  </g>
-`;
-
   // --- Drawing State ---
   lines: Line[] = [];
   activeId: number | null = null;
@@ -227,7 +220,7 @@ export class EditorComponent implements OnInit, AfterViewInit {
 
     // 4. Draw the Icon/Symbol
     this.ctx.fillStyle = '#000000'; // Your theme color
-    this.ctx.font = '18px Arial'; // Adjusted size for the circle
+    this.ctx.font = '20px Arial'; // Adjusted size for the circle
     this.ctx.textAlign = 'center';
     this.ctx.textBaseline = 'middle';
     this.ctx.fillText(icon, x, y);
@@ -724,15 +717,6 @@ export class EditorComponent implements OnInit, AfterViewInit {
     this.activeId = null;
 
     this.render();
-  }
-
-  adjustWidth(delta: number) {
-    if (!this.activeLine || this.activeLine.locked) return;
-
-    const currentWidth = this.activeLine.width || 2;
-    const newWidth = Math.max(1, currentWidth + delta); // Prevent width < 1
-
-    this.onWidthChange(newWidth);
   }
 
   /**

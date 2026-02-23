@@ -80,9 +80,3 @@ input:focus {
 .no-spinners {
   -moz-appearance: textfield;
 }
-
-
-.delete-button svg:hover{
-  fill: #ff9100;
-  color: #ff9100;
-}

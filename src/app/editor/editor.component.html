@@ -1,6 +1,6 @@
-<div class="relative w-screen h-screen">
+<div class="relative w-screen h-screen flex items-center justify-center">
   <div
-    class="fixed top-0 left-0 m-2 z-5 flex justify-center items-center space-x-2"
+    class="fixed top-0 left-0 m-2 z-50 flex flex-col sm:flex-row justify-center items-center space-y-2 sm:space-y-0 sm:space-x-2"
   >
     <button
       (click)="addNewLine('straight')"
@@ -27,7 +27,7 @@
 
   <div
     *ngIf="activeId"
-    class="fixed top-0 left-[650px] m-3 px-2 rounded-lg z-50 flex items-center justify-center space-x-2 bg-white border shadow shadow-[#f6f9fb] h-10"
+    class="fixed top-0 m-3 px-2 rounded-lg z-50 flex items-center justify-center space-x-2 bg-white border shadow shadow-[#f6f9fb] h-10"
   >
     <img
       (click)="toggleLineStyle()"
@@ -54,69 +54,117 @@
       <div
         *ngIf="menuStates.width"
         title="Line Width"
-        class="absolute top-8 mt-3 flex flex-col items-center justify-center gap-3 rounded px-4 py-3 w-32 bg-white border shadow shadow-[#f6f9fb]"
+        class="absolute top-8 mt-3 px-4 py-3 min-w-44 flex flex-col items-start justify-center gap-3 rounded-md bg-white border shadow shadow-[#f6f9fb]"
       >
-        <div class="flex items-center justify-center gap-2">
-          <button
-            class="w-8 h-8 p-1 rounded-sm cursor-pointer border shadow shadow-[#f6f9fb]"
+        <div class="flex flex-col items-start justify-center gap-2 w-full">
+          <span class="text-xs font-semibold" title="Stroke Style"
+            >Stroke Style</span
           >
-            <img src="/assets/ls-line.svg" alt="" />
-          </button>
-          <button
-            class="w-8 h-8 p-1 rounded-sm cursor-pointer border shadow shadow-[#f6f9fb]"
-          >
-            <img src="/assets/ls-dashed.svg" alt="" />
-          </button>
-          <button
-            class="w-8 h-8 p-1 rounded-sm cursor-pointer border shadow shadow-[#f6f9fb]"
-          >
-            <img src="/assets/ls-dotted.svg" alt="" />
-          </button>
+          <div class="flex items-start justify-between w-full">
+            <button
+              title="Stroke Style : Solid"
+              [disabled]="activeLine?.locked"
+              class="w-9 h-9 p-1 flex items-center justify-center shadow cursor-pointer hover:bg-[#f6f9fb] hover:border rounded-md"
+            >
+              <!-- ls- stands for line style -->
+
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <line
+                  x2="24"
+                  y1="50%"
+                  y2="50%"
+                  [ngClass]="
+                    activeLine?.locked ? 'stroke-gray-200' : 'stroke-black'
+                  "
+                  stroke-width="2"
+                  shape-rendering="crispEdges"
+                ></line>
+              </svg>
+            </button>
+            <button
+              title="Stroke Style : Dashed"
+              [disabled]="activeLine?.locked"
+              class="w-9 h-9 p-1 flex items-center justify-center shadow cursor-pointer hover:bg-[#f6f9fb] hover:border rounded-md"
+            >
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <line
+                  x1="1"
+                  x2="23"
+                  y1="50%"
+                  y2="50%"
+                  [ngClass]="
+                    activeLine?.locked ? 'stroke-gray-200' : 'stroke-black'
+                  "
+                  stroke-dasharray="6 2"
+                  stroke-width="2"
+                  shape-rendering="crispEdges"
+                ></line>
+              </svg>
+            </button>
+            <button
+              title="Stroke Style : Dotted"
+              [disabled]="activeLine?.locked"
+              class="w-9 h-9 p-1 flex items-center justify-end shadow cursor-pointer hover:bg-[#f6f9fb] hover:border rounded-md"
+            >
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <line
+                  x1="2"
+                  x2="22"
+                  y1="50%"
+                  y2="50%"
+                  [ngClass]="
+                    activeLine?.locked ? 'stroke-gray-200' : 'stroke-black'
+                  "
+                  stroke-width="3"
+                  stroke-dasharray="0 6"
+                  stroke-linecap="round"
+                ></line>
+              </svg>
+            </button>
+          </div>
         </div>
 
-        <div class="flex items-center justify-center gap-2">
-          <button
-            class="w-8 h-8 p-1 rounded-sm cursor-pointer border shadow shadow-[#f6f9fb]"
-            (click)="adjustWidth(-1)"
-            [disabled]="(activeLine?.width || 2) <= 1 || activeLine?.locked"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              height="24px"
-              viewBox="0 -960 960 960"
-              width="24px"
-              fill="#000000"
-            >
-              <path d="M200-440v-80h560v80H200Z" />
-            </svg>
-          </button>
+        <div class="flex flex-col items-start justify-center gap-3 w-full">
+          <span class="text-xs font-semibold">Line Width</span>
+          <div class="flex items-center justify-center gap-2">
+            <input
+              type="range"
+              step="1"
+              title="Slide to adjust width"
+              [value]="activeLine?.width || 2"
+              (input)="onWidthChange($any($event.target).value)"
+              class="w-full h-2 cursor-pointer appearance-none rounded-lg border shadow-sm"
+              [disabled]="activeLine?.locked"
+              [style.accentColor]="'#ff9100'"
+            />
 
-          <input
-            type="number"
-            title="Line Width"
-            [value]="activeLine?.width || 2"
-            (input)="onWidthChange($any($event.target).value)"
-            class="w-9 h-8 p-1 text-center text-sm no-spinners border shadow shadow-[#f6f9fb]"
-            [disabled]="activeLine?.locked"
-          />
-
-          <button
-            class="w-8 h-8 p-1 rounded-sm cursor-pointer border shadow shadow-[#f6f9fb]"
-            (click)="adjustWidth(1)"
-            [disabled]="activeLine?.locked"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg w-7 h-7"
-              height="24px"
-              viewBox="0 -960 960 960"
-              width="24px"
-              fill="#000000"
-            >
-              <path
-                d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z"
-              />
-            </svg>
-          </button>
+            <input
+              type="number"
+              title="Line Width"
+              [value]="activeLine?.width || 2"
+              (input)="onWidthChange($any($event.target).value)"
+              class="w-9 h-8 p-1 text-center text-sm no-spinners rounded-md border shadow shadow-[#f6f9fb]"
+              [disabled]="activeLine?.locked"
+            />
+          </div>
         </div>
       </div>
     </div>
@@ -125,7 +173,7 @@
       class="flex items-center justify-center h-8 w-8 rounded-md hover:bg-[#f6f9fb] hover:border"
     >
       <div
-        class="relative w-6 border-2 cursor-pointer transition-all flex items-center justify-center h-6 rounded-full"
+        class="relative w-6 border-2 cursor-pointer transition-all flex items-center justify-center h-6 rounded-full focus-within:border-[#ff9100]"
         [style.backgroundColor]="activeLine?.color || '#000000'"
         (click)="colorInput.click()"
         title="Change Color"
@@ -133,9 +181,10 @@
         <input
           #colorInput
           type="color"
-          class="absolute top-3.5 opacity-0 w-full h-full cursor-pointer"
+          class="absolute top-3.5 opacity-0 w-full h-full cursor-pointer disabled:cursor-not-allowed"
           [value]="activeLine?.color || '#000000'"
           (input)="updateActiveLine($any($event.target).value, null)"
+          [disabled]="activeLine?.locked"
         />
       </div>
     </div>
@@ -177,31 +226,47 @@
   </canvas>
 
   <div
-    class="fixed bottom-0 w-full z-50 flex flex-column items-center justify-center pointer-events-none"
+    class="fixed bottom-0 w-full z-50 flex flex-col items-center pointer-events-none text-sm"
   >
+    <!-- Toggle Button -->
     <button
       (click)="showFooter = !showFooter"
-      class="m-4 rounded absolute bottom-0 right-0 w-7 h-7 border-2 border-black cursor-pointer flex items-center justify-center pointer-events-auto"
+      class="absolute bottom-20 sm:bottom-16 md:bottom-12 lg:bottom-5 right-4 z-50 w-10 h-10 p-1 bg-white hover:bg-[#f6f9fb] border hover:border-2 rounded-md cursor-pointer flex items-center justify-center pointer-events-auto"
+      [ngClass]="showFooter ? 'border-[#ff9100]' : ''"
     >
       <img
-        class="pi text-900 font-bold"
+        class="w-8 h-8"
         [src]="showFooter ? '/assets/down.svg' : '/assets/up.svg'"
       />
     </button>
 
+    <!-- Footer Panel -->
     <div
-      class="w-2/3 px-10 my-2 mx-20 transition-all transition-duration-300 pointer-events-auto bg-[#f6f9fb] rounded-xl border"
-      [style.height]="showFooter ? '80px' : '0'"
-      [style.opacity]="showFooter ? '1' : '0'"
+      class="w-[95%] sm:w-[85%] md:w-2/3 px-4 sm:px-6 md:px-10 py-3 my-2 bg-white border shadow shadow-[#f6f9fb] rounded-xl transition-all duration-300 ease-in-out pointer-events-auto"
+      [class.translate-y-full]="!showFooter"
+      [class.opacity-0]="!showFooter"
+      [class.opacity-100]="showFooter"
     >
-      <div class="flex items-center justify-between h-full">
-        <div class="flex items-center gap-4">
-          <div class="flex items-center gap-2">
-            <img
-              src="/assets/minus.svg"
-              class="w-7 h-7"
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+        <!-- Left Section -->
+        <div
+          class="flex flex-col sm:flex-row items-center justify-between gap-4 flex-wrap"
+        >
+          <div class="flex items-center gap-2 flex-wrap">
+            <button
+              class="w-9 h-9 p-2 flex items-center justify-center cursor-pointer hover:bg-[#f6f9fb] hover:border rounded-md active:border-[#ff9100] active:text-[#ff9100]"
               (click)="adjustZoom(-0.1)"
-            />
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                height="24px"
+                viewBox="0 -960 960 960"
+                width="24px"
+                fill="currentColor"
+              >
+                <path d="M200-440v-80h560v80H200Z" />
+              </svg>
+            </button>
 
             <input
               type="range"
@@ -210,52 +275,65 @@
               step="0.1"
               [(ngModel)]="zoomLevel"
               (input)="render()"
-              class="cursor-pointer zoom-slider background"
-            />
-
-            <img
-              src="/assets/plus.svg"
-              class="w-7 h-7"
-              (click)="adjustZoom(0.1)"
+              class="cursor-pointer rounded-lg"
+              [style.accentColor]="'#ff9100'"
             />
 
             <button
+              class="w-9 h-9 p-2 flex items-center justify-center cursor-pointer hover:bg-[#f6f9fb] hover:border rounded-md active:border-[#ff9100] active:text-[#ff9100]"
+              (click)="adjustZoom(0.1)"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                height="24px"
+                viewBox="0 -960 960 960"
+                width="24px"
+                fill="currentColor"
+              >
+                <path
+                  d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z"
+                />
+              </svg>
+            </button>
+
+            <button
               (click)="resetZoom()"
-              class="px-4 py-2 font-bold cursor-pointer flex items-center gap-2"
+              class="px-3 py-2 cursor-pointer border hover:bg-[#f6f9fb] hover:border active:text-[#ff9100] rounded-md active:border-[#ff9100]"
             >
               Reset Zoom
             </button>
           </div>
 
           <div
-            class="flex items-center justify-center gap-1 px-2 py-1 bg-white"
+            class="flex items-center gap-1 px-4 py-1 border focus-within:border-[#ff9100] bg-white hover:bg-[#f6f9fb] hover:border rounded-md"
           >
             <input
               type="number"
               [value]="(zoomLevel * 100).toFixed(0)"
               (change)="onZoomInput($any($event.target).value)"
-              class="border-none outline-none w-9 h-7 text-center font-bold text-900 no-spinners"
+              class="w-7 h-7 text-center text-sm no-spinners bg-inherit"
             />
-            <span class="text-900 font-medium">%</span>
+            <span class="font-medium">%</span>
           </div>
         </div>
 
+        <!-- Right Button -->
         <button
           (click)="addToProject()"
-          class="border-none px-4 py-2 font-bold cursor-pointer flex items-center justify-center gap-2 hover:text-[#ff9100]"
+          class="px-3 py-2 flex items-center gap-2 hover:text-[#ff9100] cursor-pointer border hover:bg-[#f6f9fb] hover:border rounded-md active:border-2 active:border-[#ff9100]"
         >
+          Add to Project
           <svg
             xmlns="http://www.w3.org/2000/svg"
             height="24px"
             viewBox="0 -960 960 960"
             width="24px"
-            fill="#000000"
+            fill="currentColor"
           >
             <path
-              d="M440-320h80v-120h120v-80H520v-120h-80v120H320v80h120v120Zm40 240q-16 0-30.5-5.5T424-103L105-423q-11-12-18-26.5T80-480q0-16 7-30.5t18-25.5l319-320q12-12 26-18t30-6q16 0 31 6t26 18l318 320q11 12 18 26t7 30q0 16-6.5 30.5T855-423L537-103q-11 11-26 17t-31 6Zm0-80 319-320-319-320-319 320 319 320Zm0-320Z"
+              d="M120-160v-640l760 320-760 320Zm80-120 474-200-474-200v140l240 60-240 60v140Zm0 0v-400 400Z"
             />
           </svg>
-          Add to Project
         </button>
       </div>
     </div>
