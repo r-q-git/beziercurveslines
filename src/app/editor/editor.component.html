@@ -54,19 +54,27 @@
       <div
         *ngIf="menuStates.width"
         title="Line Width"
-        class="absolute top-8 mt-3 rounded px-4 py-3 w-32 h-12 bg-white border shadow shadow-[#f6f9fb]"
+        class="absolute top-8 mt-3 flex flex-col items-center justify-center gap-3 rounded px-4 py-3 w-32 bg-white border shadow shadow-[#f6f9fb]"
       >
-
-        <div>
-          <button></button>
-          <button></button>
-          <button></button>
+        <div class="flex items-center justify-center gap-2">
+          <button
+            class="w-8 h-8 p-1 rounded-sm cursor-pointer border shadow shadow-[#f6f9fb]"
+          >
+            <img src="/assets/ls-line.svg" alt="" />
+          </button>
+          <button
+            class="w-8 h-8 p-1 rounded-sm cursor-pointer border shadow shadow-[#f6f9fb]"
+          >
+            <img src="/assets/ls-dashed.svg" alt="" />
+          </button>
+          <button
+            class="w-8 h-8 p-1 rounded-sm cursor-pointer border shadow shadow-[#f6f9fb]"
+          >
+            <img src="/assets/ls-dotted.svg" alt="" />
+          </button>
         </div>
 
-        <div class="flex items-center justify-center gap-1">
-
-
-
+        <div class="flex items-center justify-center gap-2">
           <button
             class="w-8 h-8 p-1 rounded-sm cursor-pointer border shadow shadow-[#f6f9fb]"
             (click)="adjustWidth(-1)"

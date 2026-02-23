@@ -204,16 +204,34 @@ export class EditorComponent implements OnInit, AfterViewInit {
 
   private drawIcon(x: number, y: number, icon: string) {
     this.ctx.save();
-    this.ctx.lineWidth = 1;
-    this.ctx.fillStyle = '#f6f9fb';
-    this.ctx.strokeStyle = '#ff9100';
-    this.ctx.fillRect(x - 12, y - 12, 24, 24);
-    this.ctx.strokeRect(x - 12, y - 12, 24, 24);
-    this.ctx.fillStyle = '#ff9100';
-    this.ctx.font = '22px extrabold Arial';
+
+    // 1. Set up the Shadow
+    this.ctx.shadowColor = 'rgba(0, 0, 0, 0.25)'; // Light grey/translucent black
+    this.ctx.shadowBlur = 6; // Softness of the shadow
+    this.ctx.shadowOffsetX = 0; // Horizontal offset
+    this.ctx.shadowOffsetY = 3; // Vertical offset (gives it lift)
+
+    // 2. Draw the White Circle Background
+    this.ctx.beginPath();
+    this.ctx.fillStyle = '#ffffff'; // Pure white background
+    // Radius of 14 for a 28px diameter circle (slightly larger than your 24px rect)
+    this.ctx.arc(x, y, 14, 0, Math.PI * 2);
+    this.ctx.fill();
+
+    // 3. IMPORTANT: Clear shadow before drawing the text
+    // This keeps the icon/symbol sharp
+    this.ctx.shadowColor = 'transparent';
+    this.ctx.shadowBlur = 0;
+    this.ctx.shadowOffsetX = 0;
+    this.ctx.shadowOffsetY = 0;
+
+    // 4. Draw the Icon/Symbol
+    this.ctx.fillStyle = '#000000'; // Your theme color
+    this.ctx.font = '18px Arial'; // Adjusted size for the circle
     this.ctx.textAlign = 'center';
     this.ctx.textBaseline = 'middle';
     this.ctx.fillText(icon, x, y);
+
     this.ctx.restore();
   }
 
