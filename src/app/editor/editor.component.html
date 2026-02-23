@@ -66,6 +66,12 @@
               [disabled]="activeLine?.locked"
               class="w-9 h-9 p-1 flex items-center justify-center shadow cursor-pointer hover:bg-[#f6f9fb] hover:border rounded-md"
               (click)="updateActiveLine(null, null, false, 'solid')"
+              [ngClass]="activeLine?.locked ? 'text-gray-200' : 'text-black'"
+              [ngClass]="
+                activeLine?.strokeStyle == 'solid'
+                  ? 'border border-[#ff9100] text-[#ff9100]'
+                  : 'text-black'
+              "
             >
               <!-- ls- stands for line style -->
 
@@ -80,9 +86,7 @@
                   x2="24"
                   y1="50%"
                   y2="50%"
-                  [ngClass]="
-                    activeLine?.locked ? 'stroke-gray-200' : 'stroke-black'
-                  "
+                  stroke="currentColor"
                   stroke-width="2"
                   shape-rendering="crispEdges"
                 ></line>
@@ -93,6 +97,12 @@
               [disabled]="activeLine?.locked"
               class="w-9 h-9 p-1 flex items-center justify-center shadow cursor-pointer hover:bg-[#f6f9fb] hover:border rounded-md"
               (click)="updateActiveLine(null, null, false, 'dashed')"
+              [ngClass]="activeLine?.locked ? 'text-gray-200' : 'text-black'"
+              [ngClass]="
+                activeLine?.strokeStyle == 'dashed'
+                  ? 'border border-[#ff9100] text-[#ff9100]'
+                  : 'text-black'
+              "
             >
               <svg
                 width="24"
@@ -106,9 +116,7 @@
                   x2="23"
                   y1="50%"
                   y2="50%"
-                  [ngClass]="
-                    activeLine?.locked ? 'stroke-gray-200' : 'stroke-black'
-                  "
+                  stroke="currentColor"
                   stroke-dasharray="6 2"
                   stroke-width="2"
                   shape-rendering="crispEdges"
@@ -119,7 +127,13 @@
               title="Stroke Style : Dotted"
               [disabled]="activeLine?.locked"
               class="w-9 h-9 p-1 flex items-center justify-end shadow cursor-pointer hover:bg-[#f6f9fb] hover:border rounded-md"
-              (click)="updateActiveLine(null, null, false, 'dashed')"
+              (click)="updateActiveLine(null, null, false, 'dotted')"
+              [ngClass]="activeLine?.locked ? 'text-gray-200' : 'text-black'"
+              [ngClass]="
+                activeLine?.strokeStyle == 'dotted'
+                  ? 'border border-[#ff9100] text-[#ff9100]'
+                  : 'text-black'
+              "
             >
               <svg
                 width="24"
@@ -133,9 +147,7 @@
                   x2="22"
                   y1="50%"
                   y2="50%"
-                  [ngClass]="
-                    activeLine?.locked ? 'stroke-gray-200' : 'stroke-black'
-                  "
+                  stroke="currentColor"
                   stroke-width="3"
                   stroke-dasharray="0 6"
                   stroke-linecap="round"
