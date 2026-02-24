@@ -6,22 +6,10 @@ import {
   ViewChild,
   AfterViewInit,
 } from '@angular/core';
-
-interface Point {
-  x: number;
-  y: number;
-}
-interface Line {
-  id: number;
-  color: string;
-  width: number;
-  locked: boolean;
-  start: Point;
-  end: Point;
-  elbows: Point[];
-  type: 'straight' | 'step' | 'curve';
-  strokeStyle: 'solid' | 'dashed' | 'dotted';
-}
+import { IframeMessageType } from 'src/models/drawing.model';
+import { QlIframeMessageService } from 'src/services/QlIframeMessageService';
+import { BZgenerateBase64SvgFromLines } from 'src/services/BZgenerateBase64SvgFromLines';
+import { Line, Point } from 'src/models/line.model';
 
 @Component({
   selector: 'app-editor',
@@ -567,7 +555,7 @@ export class EditorComponent implements OnInit, AfterViewInit {
     return { x, y };
   }
 
-  private getPath(pts: Point[], type: string): string {
+  public getPath(pts: Point[], type: string): string {
     if (pts.length < 2) return '';
     let d = `M ${pts[0].x} ${pts[0].y}`;
 
@@ -778,8 +766,52 @@ export class EditorComponent implements OnInit, AfterViewInit {
     }
   }
 
+  /**
+   * @description
+   *
+   * this method send the beziers to the parent in the form of the base64 svg string.
+   *
+   * @param dataString base64 string send to the parent.
+   * @param type type defined by the parent to be send out of 'imagebox' | 'stickerbox' | 'textbox' | 'svg'.
+   * @param metaData width, height, name and createdAt of the beziers created.
+   * @param targetOrigin  parent origin url.
+   */
+
+  sendAddObject(
+    dataString: string,
+    type: 'imagebox' | 'stickerbox' | 'textbox' | 'svg',
+    metaData?: Record<string, any>,
+    targetOrigin: string = '*',
+  ) {
+    QlIframeMessageService.sendMessageToParent(
+      {
+        type: IframeMessageType.ADD_OBJECT,
+        payload: {
+          dataString,
+          type,
+          metaData,
+        },
+      },
+      targetOrigin,
+    );
+  }
+
   addToProject() {
     console.log('Saving project:', this.lines);
-    alert('Project Data Saved!');
+
+    if (!this.lines || this.lines.length === 0) {
+      console.log('No lines to export');
+      return;
+    }
+
+    const base64Svg = BZgenerateBase64SvgFromLines(this.canvasRef, this.lines);
+    console.log(base64Svg);
+
+    this.sendAddObject(base64Svg, 'stickerbox', {
+      width: this.canvasRef.nativeElement.width,
+      height: this.canvasRef.nativeElement.height,
+      name: 'Bezier Drawing',
+      createdAt: new Date().toISOString(),
+    });
   }
 }
