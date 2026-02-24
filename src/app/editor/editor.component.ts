@@ -29,7 +29,7 @@ export class EditorComponent implements OnInit, AfterViewInit {
 
   // --- Zoom & Footer State ---
   zoomLevel: number = 1.0;
-  showFooter: boolean = false;
+  showFooter: boolean = true;
 
   // --- UI Controls ---
   menuStates = { width: false };

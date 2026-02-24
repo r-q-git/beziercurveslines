@@ -163,6 +163,7 @@
             <input
               type="range"
               step="1"
+              min="0.5"
               title="Slide to adjust width"
               [value]="activeLine?.width || 2"
               (input)="onWidthChange($any($event.target).value)"
@@ -173,6 +174,7 @@
 
             <input
               type="number"
+              min="0.5"
               title="Line Width"
               [value]="activeLine?.width || 2"
               (input)="onWidthChange($any($event.target).value)"
