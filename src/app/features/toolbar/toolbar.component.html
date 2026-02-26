@@ -1,0 +1,210 @@
+<div
+  *ngIf="activeId"
+  class="z-50 m-3 px-2 rounded-lg flex items-center justify-center space-x-2 bg-white border shadow shadow-[#f6f9fb] h-10"
+>
+  <img
+    (click)="toggleLineStyle()"
+    [title]="
+      activeLine?.type === 'curve' ? 'Switch to Pointy' : 'Switch to Smooth'
+    "
+    class="cursor-pointer h-8 hover:bg-[#f6f9fb] hover:border rounded-md"
+    [src]="
+      activeLine?.type === 'curve' ? '/assets/roundy.svg' : '/assets/pointy.svg'
+    "
+  />
+  <div class="relative flex items-center justify-center">
+    <img
+      title="Line Width"
+      class="cursor-pointer h-8 p-1 hover:bg-[#f6f9fb] hover:border rounded-md"
+      [src]="
+        menuStates.width ? '/assets/linewidth2.svg' : '/assets/linewidth.svg'
+      "
+      (click)="menuStates.width = !menuStates.width"
+    />
+
+    <div
+      *ngIf="menuStates.width"
+      title="Line Width"
+      class="absolute top-8 mt-3 px-4 py-3 min-w-44 flex flex-col items-start justify-center gap-3 rounded-md bg-white border shadow shadow-[#f6f9fb]"
+    >
+      <div class="flex flex-col items-start justify-center gap-2 w-full">
+        <span class="text-xs font-semibold" title="Stroke Style"
+          >Stroke Style</span
+        >
+        <div class="flex items-start justify-between w-full">
+          <button
+            title="Stroke Style : Solid"
+            [disabled]="activeLine?.locked"
+            class="w-9 h-9 p-1 flex items-center justify-center shadow cursor-pointer hover:bg-[#f6f9fb] hover:border rounded-md"
+            (click)="updateActiveLine(null, null, false, 'solid')"
+            [ngClass]="activeLine?.locked ? 'text-gray-200' : 'text-black'"
+            [ngClass]="
+              activeLine?.strokeStyle == 'solid'
+                ? 'border border-[#ff9100] text-[#ff9100]'
+                : 'text-black'
+            "
+          >
+            <!-- ls- stands for line style -->
+
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <line
+                x2="24"
+                y1="50%"
+                y2="50%"
+                stroke="currentColor"
+                stroke-width="2"
+                shape-rendering="crispEdges"
+              ></line>
+            </svg>
+          </button>
+          <button
+            title="Stroke Style : Dashed"
+            [disabled]="activeLine?.locked"
+            class="w-9 h-9 p-1 flex items-center justify-center shadow cursor-pointer hover:bg-[#f6f9fb] hover:border rounded-md"
+            (click)="updateActiveLine(null, null, false, 'dashed')"
+            [ngClass]="activeLine?.locked ? 'text-gray-200' : 'text-black'"
+            [ngClass]="
+              activeLine?.strokeStyle == 'dashed'
+                ? 'border border-[#ff9100] text-[#ff9100]'
+                : 'text-black'
+            "
+          >
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <line
+                x1="1"
+                x2="23"
+                y1="50%"
+                y2="50%"
+                stroke="currentColor"
+                stroke-dasharray="6 2"
+                stroke-width="2"
+                shape-rendering="crispEdges"
+              ></line>
+            </svg>
+          </button>
+          <button
+            title="Stroke Style : Dotted"
+            [disabled]="activeLine?.locked"
+            class="w-9 h-9 p-1 flex items-center justify-end shadow cursor-pointer hover:bg-[#f6f9fb] hover:border rounded-md"
+            (click)="updateActiveLine(null, null, false, 'dotted')"
+            [ngClass]="activeLine?.locked ? 'text-gray-200' : 'text-black'"
+            [ngClass]="
+              activeLine?.strokeStyle == 'dotted'
+                ? 'border border-[#ff9100] text-[#ff9100]'
+                : 'text-black'
+            "
+          >
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <line
+                x1="2"
+                x2="22"
+                y1="50%"
+                y2="50%"
+                stroke="currentColor"
+                stroke-width="3"
+                stroke-dasharray="0 6"
+                stroke-linecap="round"
+              ></line>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="flex flex-col items-start justify-center gap-3 w-full">
+        <span class="text-xs font-semibold">Line Width</span>
+        <div class="flex items-center justify-center gap-2">
+          <input
+            type="range"
+            step="1"
+            title="Slide to adjust width"
+            [value]="activeLine?.width || 2"
+            (input)="onWidthChange($any($event.target).value)"
+            class="w-full h-2 cursor-pointer appearance-none rounded-lg border shadow-sm"
+            [disabled]="activeLine?.locked"
+            [style.accentColor]="'#ff9100'"
+          />
+
+          <input
+            type="number"
+            step="1"
+            title="Line Width"
+            [value]="activeLine?.width || 2"
+            (input)="onWidthChange($any($event.target).value)"
+            class="w-9 h-8 p-1 text-center text-sm no-spinners rounded-md border shadow shadow-[#f6f9fb]"
+            [disabled]="activeLine?.locked"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div
+    class="flex items-center justify-center h-8 w-8 rounded-md hover:bg-[#f6f9fb] hover:border"
+  >
+    <div
+      class="relative w-6 border-2 cursor-pointer transition-all flex items-center justify-center h-6 rounded-full focus-within:border-[#ff9100]"
+      [style.backgroundColor]="activeLine?.color || '#000000'"
+      (click)="colorInput.click()"
+      title="Change Color"
+    >
+      <input
+        #colorInput
+        type="color"
+        class="absolute top-3.5 opacity-0 w-full h-full cursor-pointer disabled:cursor-not-allowed"
+        [value]="activeLine?.color || '#000000'"
+        (input)="
+          updateActiveLine(
+            $any($event.target).value,
+            null,
+            undefined,
+            activeLine?.strokeStyle
+          )
+        "
+        [disabled]="activeLine?.locked"
+      />
+    </div>
+  </div>
+
+  <img
+    title="Lock Line"
+    class="cursor-pointer p-1 h-8 w-8 rounded-md hover:bg-[#f6f9fb] hover:border"
+    [src]="activeLine?.locked ? '/assets/lock.svg ' : '/assets/unlock.svg'"
+    (click)="updateActiveLine(null, null, true, activeLine?.strokeStyle)"
+  />
+
+  <div
+    title="Delete Line"
+    class="cursor-pointer p-1 h-8 w-8 rounded-md hover:bg-[#f6f9fb] hover:border"
+    (click)="deleteActiveLine()"
+  >
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      height="24px"
+      viewBox="0 -960 960 960"
+      width="24px"
+      class="hover:fill-[#ff9100]"
+    >
+      <path
+        d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z"
+      />
+    </svg>
+  </div>
+</div>

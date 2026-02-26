@@ -1,0 +1,43 @@
+<div class="relative w-screen h-screen flex items-center justify-center">
+  <!-- add new line component -->
+  <app-new-line class="fixed top-0 right-0" />
+
+  <!-- toolbar / navbar component -->
+  <app-toolbar class="fixed top-0"></app-toolbar>
+
+  <!-- main canvas -->
+  <app-canvas />
+
+  <!-- Footer -->
+  <div
+    class="fixed bottom-0 w-full z-50 flex flex-col items-center pointer-events-none text-sm"
+  >
+    <!-- Footer Toggle Button -->
+    <button
+      (click)="showFooter = !showFooter"
+      class="absolute bottom-20 sm:bottom-16 md:bottom-12 lg:bottom-5 right-4 z-50 w-10 h-10 p-1 bg-white hover:bg-[#f6f9fb] border hover:border-2 rounded-md cursor-pointer flex items-center justify-center pointer-events-auto"
+      [ngClass]="showFooter ? 'border-[#ff9100]' : ''"
+    >
+      <img
+        class="w-8 h-8"
+        [src]="showFooter ? '/assets/down.svg' : '/assets/up.svg'"
+      />
+    </button>
+
+    <!-- Footer Panel -->
+    <div
+      class="w-[95%] sm:w-[85%] md:w-2/3 px-4 sm:px-6 md:px-10 py-3 my-2 bg-white border shadow shadow-[#f6f9fb] rounded-xl transition-all duration-300 ease-in-out pointer-events-auto"
+      [class.translate-y-full]="!showFooter"
+      [class.opacity-0]="!showFooter"
+      [class.opacity-100]="showFooter"
+    >
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+        <!-- Left Zoom Section -->
+        <app-zoom />
+
+        <!-- Right Send To Project Button -->
+        <app-send-to-project />
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,13 +1,4 @@
-import {
-  BaseIframeMessage,
-  AddObjectPayload,
-} from '../models/drawing.model';
-
-/**
- * Union type for all iframe message payloads
- */
-export type IframeMessage = BaseIframeMessage<AddObjectPayload>;
-
+import { IframeMessage } from '../models/iframeMessage.model';
 /**
  * Service for handling iframe communication with parent window
  *

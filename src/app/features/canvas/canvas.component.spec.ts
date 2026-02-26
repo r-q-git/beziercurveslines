@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { EditorComponent } from './editor.component';
+import { EditorComponent } from './canvas.component';
 
 describe('EditorComponent', () => {
   let component: EditorComponent;
@@ -8,7 +8,7 @@ describe('EditorComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [EditorComponent]
+      declarations: [EditorComponent],
     });
     fixture = TestBed.createComponent(EditorComponent);
     component = fixture.componentInstance;

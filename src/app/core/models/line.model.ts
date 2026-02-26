@@ -1,7 +1,4 @@
-export interface Point {
-  x: number;
-  y: number;
-}
+import { Point } from './point.model';
 
 export interface Line {
   id: number;

@@ -1,13 +1,3 @@
-export interface DrawingStroke {
-  points: number[][];
-  path: string;
-  color: string;
-  opacity: number;
-  outlineColor: string;
-  outlineWidth: number;
-}
-
-//--------- message passing to event interface
 /**
  * Message types supported for iframe communication with parent window
  */
@@ -31,3 +21,8 @@ export interface AddObjectPayload {
   type: 'imagebox' | 'stickerbox' | 'textbox' | 'svg';
   metaData?: Record<string, any>;
 }
+
+/**
+ * Union type for all iframe message payloads
+ */
+export type IframeMessage = BaseIframeMessage<AddObjectPayload>;

@@ -1,0 +1,25 @@
+<div
+  class="m-2 z-40 flex flex-col sm:flex-row justify-center items-center space-y-2 sm:space-y-0 sm:space-x-2"
+>
+  <button
+    (click)="addNewLine('straight')"
+    class="w-9 h-9 shadow-2 rounded cursor-pointer flex items-center justify-center bg-white border shadow-md shadow-[#f6f9fb] hover:border-[#ff9100] hover:scale-[1.1]"
+    title="Add Straight Line"
+  >
+    <img src="../../../assets/line.svg" class="" />
+  </button>
+  <button
+    (click)="addNewLine('step')"
+    class="w-9 h-9 rounded shadow-2 cursor-pointer flex items-center justify-center bg-white border shadow-md shadow-[#f6f9fb] hover:border-[#ff9100] hover:scale-[1.1]"
+    title="Add Step Line"
+  >
+    <img src="../../../assets/step.svg" class="" />
+  </button>
+  <button
+    (click)="addNewLine('curve')"
+    class="w-9 h-9 rounded shadow-2 cursor-pointer flex items-center justify-center bg-white border shadow-md shadow-[#f6f9fb] hover:border-[#ff9100] hover:scale-[1.1]"
+    title="Add Curve Line"
+  >
+    <img src="../../../assets/curve.svg" class="" />
+  </button>
+</div>
