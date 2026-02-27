@@ -1,21 +1,21 @@
 <div
   *ngIf="activeId"
-  class="z-50 m-3 px-2 rounded-lg flex items-center justify-center space-x-2 bg-white border shadow shadow-[#f6f9fb] h-10"
+  class="z-50 m-3 py-2 px-1 rounded-lg flex flex-col items-center justify-center space-y-2 bg-white border shadow shadow-[#f6f9fb] w-10"
 >
   <img
     (click)="toggleLineStyle()"
     [title]="
       activeLine?.type === 'curve' ? 'Switch to Pointy' : 'Switch to Smooth'
     "
-    class="cursor-pointer h-8 hover:bg-[#f6f9fb] hover:border rounded-md"
+    class="cursor-pointer w-8 h-8 hover:bg-[#f6f9fb] hover:border rounded-md"
     [src]="
       activeLine?.type === 'curve' ? '/assets/roundy.svg' : '/assets/pointy.svg'
     "
   />
-  <div class="relative flex items-center justify-center">
+  <div class="flex items-center justify-center gap-5">
     <img
       title="Line Width"
-      class="cursor-pointer h-8 p-1 hover:bg-[#f6f9fb] hover:border rounded-md"
+      class="cursor-pointer p-1 h-8 hover:bg-[#f6f9fb] hover:border rounded-md"
       [src]="
         menuStates.width ? '/assets/linewidth2.svg' : '/assets/linewidth.svg'
       "
@@ -25,7 +25,7 @@
     <div
       *ngIf="menuStates.width"
       title="Line Width"
-      class="absolute top-8 mt-3 px-4 py-3 min-w-44 flex flex-col items-start justify-center gap-3 rounded-md bg-white border shadow shadow-[#f6f9fb]"
+      class="absolute top-1 left-16 mt-3 px-4 py-3 min-w-44 flex flex-col items-start justify-center gap-3 rounded-md bg-white border shadow shadow-[#f6f9fb]"
     >
       <div class="flex flex-col items-start justify-center gap-2 w-full">
         <span class="text-xs font-semibold" title="Stroke Style"
@@ -157,30 +157,29 @@
   </div>
 
   <div
-    class="flex items-center justify-center h-8 w-8 rounded-md hover:bg-[#f6f9fb] hover:border"
+    class="relative flex items-center justify-center h-8 w-8 rounded-md hover:bg-[#f6f9fb] hover:border"
   >
     <div
-      class="relative w-6 border-2 cursor-pointer transition-all flex items-center justify-center h-6 rounded-full focus-within:border-[#ff9100]"
+      class="w-6 h-6 border-2 cursor-pointer transition-all flex items-center justify-center  rounded-full focus-within:border-[#ff9100]"
       [style.backgroundColor]="activeLine?.color || '#000000'"
       (click)="colorInput.click()"
       title="Change Color"
-    >
-      <input
-        #colorInput
-        type="color"
-        class="absolute top-3.5 opacity-0 w-full h-full cursor-pointer disabled:cursor-not-allowed"
-        [value]="activeLine?.color || '#000000'"
-        (input)="
-          updateActiveLine(
-            $any($event.target).value,
-            null,
-            undefined,
-            activeLine?.strokeStyle
-          )
-        "
-        [disabled]="activeLine?.locked"
-      />
-    </div>
+    ></div>
+    <input
+      #colorInput
+      type="color"
+      class="absolute -top-1/2 left-12 opacity-0 w-full h-full cursor-pointer disabled:cursor-not-allowed"
+      [value]="activeLine?.color || '#000000'"
+      (input)="
+        updateActiveLine(
+          $any($event.target).value,
+          null,
+          undefined,
+          activeLine?.strokeStyle
+        )
+      "
+      [disabled]="activeLine?.locked"
+    />
   </div>
 
   <img
