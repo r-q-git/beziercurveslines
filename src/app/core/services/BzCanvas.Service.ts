@@ -11,7 +11,6 @@ import { pToSegDist } from 'src/app/shared/utils/BzPToSegDist';
 
 @Injectable({ providedIn: 'root' })
 export class CanvasService {
-  // private variables
   private ctx!: CanvasRenderingContext2D;
   private canvasRef!: ElementRef<HTMLCanvasElement>;
   private lines!: Line[];
@@ -58,11 +57,11 @@ export class CanvasService {
     });
   }
 
-  // 1. Create a trigger specifically for manual render requests
+  // Create a trigger specifically for manual render requests
   private _renderRequested = new Subject<void>();
   renderRequested$ = this._renderRequested.asObservable();
 
-  // 2. Create a helper method to call it
+  // Create a helper method to call it
   requestRender() {
     this._renderRequested.next();
   }
@@ -116,15 +115,14 @@ export class CanvasService {
     this._windowInnerWidth.next(value);
   }
 
-  /* ============================
-     Mouse Down Event
-  ============================ */
+  
+  // Mouse Down Event
   onMouseDown(e: MouseEvent) {
     const { x, y } = getAdjustedCoords(this.canvasRef, e, this.getZoomLevel);
 
     const activeLine = this.activeLine;
     if (activeLine) {
-      // 1. ELBOW DELETE LOGIC (Only if NOT locked)
+      // ELBOW DELETE LOGIC 
       if (!activeLine.locked) {
         const deleteIdx = activeLine.elbows.findIndex((p) => {
           const btnX = p.x + 20;
@@ -136,13 +134,12 @@ export class CanvasService {
 
         if (deleteIdx !== -1) {
           activeLine.elbows.splice(deleteIdx, 1);
-          // this.pushLinesUpdate();
           this.requestRender();
           return;
         }
       }
 
-      // 2. POINT DRAGGING (Only if NOT locked)
+      // POINT DRAGGING
       if (!activeLine.locked) {
         const pts = [activeLine.start, activeLine.end, ...activeLine.elbows];
         const point = pts.find((pt) => Math.hypot(x - pt.x, y - pt.y) < 12);
@@ -152,7 +149,7 @@ export class CanvasService {
         }
       }
 
-      // 3. MOVE & ROTATE LOGIC (Only if NOT locked)
+      // MOVE & ROTATE LOGIC
       if (!activeLine.locked) {
         const box = getBoundingBox(activeLine);
 
@@ -179,28 +176,26 @@ export class CanvasService {
       }
     }
 
-    // 4. LINE SELECTION (Always allowed so you can select a line to unlock it)
+    // LINE SELECTION (Always allowed so you can select a line to unlock it)
     const clickedLine = getLineAt(x, y, this.lines, this.ctx);
     this.lineService.setActiveId(clickedLine ? clickedLine.id : null);
-    // this.pushLinesUpdate();
     this.requestRender();
   }
 
   onMouseMove(e: MouseEvent) {
     const { x, y } = getAdjustedCoords(this.canvasRef, e, this.getZoomLevel);
-    this.setPreviewElbow(null); // Clear previous frame's snap point
+    this.setPreviewElbow(null);
 
     if (this.getDragging) {
       this.canvasRef.nativeElement.style.cursor = 'grabbing';
       this.handleDragging(x, y);
-      // this.pushLinesUpdate();
       this.requestRender();
-      return; // Skip hover logic while dragging
+      return;
     }
 
     let foundUI = false;
 
-    // 1. PRIORITIZE ACTIVE LINE UI (Buttons)
+    // PRIORITIZE ACTIVE LINE UI (Buttons)
     if (this.activeLine) {
       const box = getBoundingBox(this.activeLine);
       const isLocked = this.activeLine.locked; // Use the specific line's locked property
@@ -228,7 +223,7 @@ export class CanvasService {
     }
 
     if (!foundUI) {
-      // 2. FIND TOP-MOST LINE
+      // FIND TOP-MOST LINE
       const targetLine = getLineAt(x, y, this.lines, this.ctx);
 
       if (targetLine) {
@@ -247,7 +242,6 @@ export class CanvasService {
         this.canvasRef.nativeElement.style.cursor = 'crosshair';
       }
     }
-    // this.pushLinesUpdate();
     this.requestRender();
   }
 
@@ -279,7 +273,6 @@ export class CanvasService {
       if (bestIdx !== -1) {
         // Insert the point at the SNAPPED coordinates
         line.elbows.splice(bestIdx, 0, { x: snap.x, y: snap.y });
-        // this.pushLinesUpdate();
         this.requestRender();
       }
     }

@@ -44,8 +44,6 @@
                 : 'text-black'
             "
           >
-            <!-- ls- stands for line style -->
-
             <svg
               width="24"
               height="24"
@@ -160,7 +158,7 @@
     class="relative flex items-center justify-center h-8 w-8 rounded-md hover:bg-[#f6f9fb] hover:border"
   >
     <div
-      class="w-6 h-6 border-2 cursor-pointer transition-all flex items-center justify-center  rounded-full focus-within:border-[#ff9100]"
+      class="w-6 h-6 border-2 cursor-pointer transition-all flex items-center justify-center rounded-full focus-within:border-[#ff9100]"
       [style.backgroundColor]="activeLine?.color || '#000000'"
       (click)="colorInput.click()"
       title="Change Color"

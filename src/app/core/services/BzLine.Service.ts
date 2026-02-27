@@ -4,7 +4,6 @@ import { BehaviorSubject } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class LineService {
-  // 🔥 Private store
   private _lines = new BehaviorSubject<Line[]>([]);
   lines$ = this._lines.asObservable();
 
@@ -13,9 +12,7 @@ export class LineService {
 
   constructor() {}
 
-  /* ============================
-     ADD LINE
-  ============================ */
+  //  ADD NEW LINE
   addLine(type: 'straight' | 'step' | 'curve') {
     const id = Date.now();
     const centerX = window.innerWidth / 2;
@@ -60,9 +57,7 @@ export class LineService {
     this._activeId.next(id);
   }
 
-  /* ============================
-     GET ACTIVE LINE AND ACTIVE ID
-  ============================ */
+  // Getters and Setters
   get activeLine(): Line | undefined {
     const id = this._activeId.getValue();
     if (id === null) return undefined;
@@ -73,31 +68,19 @@ export class LineService {
     return this._activeId.getValue();
   }
 
-  /* ============================
-     SET ACTIVE ID
-  ============================ */
-
   setActiveId(id: number | null) {
     this._activeId.next(id);
   }
 
-  /* ============================
-     LINES GETTER
-  ============================ */
   getLines(): Line[] {
     return this._lines.getValue();
   }
 
-  /* ============================
-     LINES SETTER
-  ============================ */
   setLines(lines: Line[]) {
     this._lines.next(lines);
   }
 
-  /* ============================
-     UPDATE ACTIVE LINE
-  ============================ */
+  // UPDATE ACTIVE LINE
   updateActiveLine(
     c: string | null,
     w: number | null,
@@ -113,7 +96,6 @@ export class LineService {
 
     let updatedLine = { ...currentLine };
 
-    // Lock toggle (always allowed)
     if (lockToggle) {
       updatedLine.locked = !updatedLine.locked;
     }
@@ -131,9 +113,7 @@ export class LineService {
     this._lines.next(updatedLines);
   }
 
-  /* ============================
-     DELETE ACTIVE LINE
-  ============================ */
+  // DELETE ACTIVE LINE
   deleteActiveLine() {
     const id = this._activeId.getValue();
     if (id === null) return;
@@ -144,9 +124,7 @@ export class LineService {
     this._activeId.next(null);
   }
 
-  /* ============================
-     TOGGLE LINE TYPE
-  ============================ */
+  // TOGGLE LINE TYPE : Pointy | Roundy
   toggleLineStyle() {
     const lines = this._lines.getValue();
     const index = lines.findIndex((l) => l.id === this._activeId.getValue());

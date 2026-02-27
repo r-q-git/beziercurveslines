@@ -1,16 +1,16 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { EditorComponent } from './canvas.component';
+import { CanvasComponent } from './canvas.component';
 
 describe('EditorComponent', () => {
-  let component: EditorComponent;
-  let fixture: ComponentFixture<EditorComponent>;
+  let component: CanvasComponent;
+  let fixture: ComponentFixture<CanvasComponent>;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [EditorComponent],
+      declarations: [CanvasComponent],
     });
-    fixture = TestBed.createComponent(EditorComponent);
+    fixture = TestBed.createComponent(CanvasComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

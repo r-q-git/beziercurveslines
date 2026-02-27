@@ -1,4 +1,3 @@
-import { ElementRef } from '@angular/core';
 import { Line } from 'src/app/core/models/line.model';
 import { Point } from '../../core/models/point.model';
 import { getPath } from './BzGetpath';
@@ -21,7 +20,7 @@ export function generateBase64SvgFromLines(
   lines.forEach((line: Line) => {
     const pts: Point[] = [line.start, ...(line.elbows || []), line.end];
 
-    // 🔥 EXACT SAME DASH LOGIC AS render()
+    // EXACT SAME DASH LOGIC AS render()
     const dashArray =
       line.strokeStyle === 'dashed'
         ? `${line.width * 3} ${line.width * 3}`

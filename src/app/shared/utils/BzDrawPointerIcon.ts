@@ -4,7 +4,7 @@ export function drawPointerIcon(
   y: number,
 ) {
   ctx.save();
-  // ----- Outer dashed circle -----
+  // Outer dashed circle
   ctx.beginPath();
   ctx.setLineDash([3, 3, 3, 3, 3]); // dash pattern
   ctx.lineWidth = 2;
@@ -13,7 +13,7 @@ export function drawPointerIcon(
   ctx.arc(x, y, 10, 0, Math.PI * 2);
   ctx.stroke();
 
-  // ----- Center solid circle -----
+  // Center solid circle
   ctx.beginPath();
   ctx.setLineDash([]); // reset dash
   ctx.fillStyle = '#ff9100';

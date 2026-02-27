@@ -44,7 +44,7 @@ export class CanvasComponent implements OnInit, AfterViewInit {
     this.resize();
   }
 
-  // --- Interaction ---
+  // Interaction
   onMouseDown(e: MouseEvent) {
     this.canvasService.onMouseDown(e);
   }

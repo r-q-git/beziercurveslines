@@ -32,7 +32,7 @@ export class RenderService {
     private lineService: LineService,
     private canvasService: CanvasService,
   ) {
-    // 1. Keep DATA synced (No render calls here)
+    // Keep DATA synced (No render calls here)
     this.lineService.lines$.subscribe((l) => (this.lines = l));
     this.lineService.activeId$.subscribe((id) => (this.activeId = id));
     this.canvasService.zoomLevel$.subscribe((z) => (this.zoomLevel = z));
@@ -42,7 +42,7 @@ export class RenderService {
     this.canvasService.dragging$.subscribe((d) => (this.dragging = d));
     this.canvasService.previewElbow$.subscribe((p) => (this.previewElbow = p));
 
-    // 2. The unified RENDER TRIGGER
+    // The unified RENDER TRIGGER
     // We listen to all changes, but auditTime(0) ensures we only
     // draw once per animation frame.
     merge(
@@ -51,7 +51,7 @@ export class RenderService {
       this.canvasService.zoomLevel$,
       this.canvasService.hoveredLineId$,
       this.canvasService.previewElbow$,
-      this.canvasService.renderRequested$, // This catches your manual calls!
+      this.canvasService.renderRequested$,
     )
       .pipe(auditTime(0))
       .subscribe(() => {

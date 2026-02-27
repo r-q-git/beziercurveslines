@@ -25,17 +25,17 @@ export class ZoomComponent {
   }
 
   // Set the zoom back to exactly 100% (1.0)
-  // Set the zoom back to exactly 100% (1.0)
   resetZoom() {
     this.zoomLevel = 1.0;
     this.canvasService.setZoomLevel(this.zoomLevel);
   }
 
+  // Zoom Slider 
   onZoomInput1() {
     this.canvasService.setZoomLevel(this.zoomLevel);
   }
 
-  // Handles when a user types a number like '150' into the input
+  // Zoom Input, Handles when a user types a number like '150' into the input
   onZoomInput2(value: string) {
     const num = parseFloat(value);
     if (!isNaN(num)) {

@@ -1,4 +1,4 @@
-// Helper to calculate the Cubic Bezier point at time t (0 to 1)
+// Helper to calculate the Cubic Bezier point at time t (0 to 1) using the Mathematical Bezier Curve Equation.
 export function getBezierPoint(
   t: number,
   p0: number,
